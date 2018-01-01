@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import createPersistedState from "vuex-persistedstate"; // User For Saving VuexStore To LocalStorage
+// import createPersistedState from "vuex-persistedstate"; // User For Saving VuexStore To LocalStorage
 
 
 import {adminLogin} from '../service/api'
@@ -8,21 +8,33 @@ import {adminLogin} from '../service/api'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-plugins: [createPersistedState()],
-strict: process.env.NODE_ENV === "development",
   state: {
     adminDetails : {
-      name: 'name1',
-      email : 'email1',
-      token : 'token1'
+      name: 'abcd',
+      isloggedIn: localStorage.getItem('isloggedIn'),
     }
   },
   mutations: {
+    setLoggedInStatus(state, payload){
+      // console.log(payload.isloggedIn)
+      state.adminDetails.isloggedIn = payload.isloggedIn;
+      localStorage.setItem('isloggedIn', payload.isloggedIn)
+    }
   },
   actions: {
-    Login: (state, payload) => {
-      return adminLogin(payload)
+    Login: ({commit}, payload) => {
+      return adminLogin(payload).then(async(response) =>{
+        let obj = {};
+        obj.isloggedIn = true;
+        await commit('setLoggedInStatus', obj)
+        return response;
+      })
    },
+   Logout: ({ commit }) =>{
+      let obj = {};
+      obj.isloggedIn = false;
+      commit('setLoggedInStatus', obj)
+   }
     
   },
   modules: {

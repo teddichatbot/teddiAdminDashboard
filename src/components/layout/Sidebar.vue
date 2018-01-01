@@ -34,12 +34,10 @@
 </template>
 
 <script>
-
 export default {
   name: 'Sidebar',
 
   components: {},
-
   data: () => ({
     drawer: null,
   }),

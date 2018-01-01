@@ -20,7 +20,7 @@
                 dark
                 flat
               >
-                <v-toolbar-title>Login form</v-toolbar-title>
+                <v-toolbar-title>Login form </v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-tooltip bottom>
                   
@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapState, mapActions } from "vuex";
 // import API from '../service/api'
   export default {
     name: "login-page",
@@ -77,8 +77,16 @@ import { mapActions } from "vuex";
         password: ""
       }
     }),
+    // beforeEnter: (to, from, next) => {
+    //     console.log('check login',this.adminDetails.isloggedIn);
+    //     next();
+    // },
+    computed: {
+      ...mapState(['adminDetails'])
+    },
     methods: {
       ...mapActions(["Login"]),
+
       async login(){
         if(this.payload.username == ''){
           alert('Please Enter Username');
@@ -90,7 +98,7 @@ import { mapActions } from "vuex";
         
         this.Login(this.payload)
         .then(res=>{
-          console.log(res.data.msg)
+          console.log(res.data.msg);
           this.$router.push({ name: "Dashboard" });
         })
         .catch((err)=>{

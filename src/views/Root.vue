@@ -1,6 +1,7 @@
 <template>
   <v-app id="inspire">
     
+    <!-- <Sidebar v-if="this.adminDetails.isloggedIn" /> -->
     <Sidebar />
     
     <Header/>
@@ -9,6 +10,7 @@
       
       <v-container>
         <v-row>
+          
          <router-view />
         </v-row>
       </v-container>
@@ -20,12 +22,12 @@
 </template>
 
 <script>
+import {mapState} from 'vuex'
 import Sidebar from '../components/layout/Sidebar'
 import Header from '../components/layout/Header'
 import Footer from '../components/layout/Footer'
   export default {
     props: {
-      source: String,
     },
     components:{
       Sidebar,
@@ -33,7 +35,13 @@ import Footer from '../components/layout/Footer'
       Footer
     },
     data: () => ({
-      drawer: null,
+      // drawer: null,
     }),
+    computed: {
+      ...mapState(['adminDetails'])
+    },
+    mounted() {
+        // console.log(this.adminDetails)
+    },
   }
 </script>

@@ -5,7 +5,7 @@
         cols="12"
         md="12"
         >
-            <h1>Dashboard Page</h1>
+            <h1>{{ msg }}</h1>
         </v-col>
       <v-col
         cols="12"
@@ -64,7 +64,36 @@
 
             </v-list-item>
         </v-card>
+       
+      </v-col>
+      <v-col
+        cols="12"
+        md="4"
+      >
+      <h1>Random No from method:</h1>
       </v-col>
     </v-row>
 
 </template>
+
+<script>
+import {mapState} from 'vuex'
+export default {
+    data () {
+        return{
+            msg: 'Dashboard Page'
+        }
+        
+    },
+    computed: {
+        ...mapState(['isLoggedIn'])
+    },
+    methods: {
+        beforeOpen: function () {
+        console.log("open")
+        console.log(this.isLoggedIn)
+        },
+    }
+    
+}
+</script>
