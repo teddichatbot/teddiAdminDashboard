@@ -1,7 +1,5 @@
 <template>
-  <div class="home">
-    <User />
-  </div>
+  <User />
 </template>
 
 <script>

@@ -1,7 +1,5 @@
 <template>
-  <!-- <div class="home">
-    <FAQ />
-  </div> -->
+  
   <FAQ />
 </template>
 

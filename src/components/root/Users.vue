@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-col cols=12>
     <v-data-table
       :headers="headers"
       :items="desserts"
@@ -20,7 +20,7 @@
         @input="itemsPerPage = parseInt($event, 10)"
       ></v-text-field> -->
     </div>
-  </div>
+  </v-col>
 </template>
 
 <script>
