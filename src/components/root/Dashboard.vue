@@ -5,7 +5,7 @@
         cols="12"
         md="12"
         >
-            <h1>Dashboard Page 1</h1>
+            <h1>Dashboard Page</h1>
         </v-col>
       <v-col
         cols="12"
