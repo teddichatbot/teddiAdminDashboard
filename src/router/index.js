@@ -41,6 +41,14 @@ Vue.use(VueRouter)
           requiresAuth: true
         } 
       },
+      {
+        name: 'Feedback',
+        path: '/feedback',
+        component: () => import('../views/main/FeedbackView.vue'),
+        meta: {
+          requiresAuth: true
+        } 
+      },
     ]
   },
 ]

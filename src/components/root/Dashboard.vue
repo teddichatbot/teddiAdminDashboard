@@ -70,7 +70,7 @@
         cols="12"
         md="4"
       >
-      <h1>Random No from method:</h1>
+      <!-- <h1>Random No from method:</h1> -->
       </v-col>
     </v-row>
 

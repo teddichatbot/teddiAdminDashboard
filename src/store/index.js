@@ -3,7 +3,11 @@ import Vuex from 'vuex'
 // import createPersistedState from "vuex-persistedstate"; // User For Saving VuexStore To LocalStorage
 
 
-import {adminLogin} from '../service/api'
+import {
+  adminLogin,
+  givenFeedbackUserList,
+  getFeedbackOfSingleUser
+} from '../service/api'
 
 Vue.use(Vuex)
 
@@ -29,12 +33,22 @@ export default new Vuex.Store({
         await commit('setLoggedInStatus', obj)
         return response;
       })
-   },
-   Logout: ({ commit }) =>{
+    },
+    Logout: ({ commit }) =>{
       let obj = {};
       obj.isloggedIn = false;
       commit('setLoggedInStatus', obj)
-   }
+    },
+    GivenFeedbackUserList: ()=>{
+      return givenFeedbackUserList().then(async(response)=>{
+        return response;
+      })
+    },
+    SingleUserFeedback: (context, conversationId)=>{
+      return getFeedbackOfSingleUser(conversationId).then(async(response)=>{
+        return response;
+      })
+    }
     
   },
   modules: {
