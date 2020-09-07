@@ -38,7 +38,7 @@
                     <!-- <v-text-field v-model="editedItem.name" label="Dessert name"></v-text-field> -->
                     <v-card-title >App Feedback</v-card-title>
                       <template v-if="appFeedback.length>0">
-                        <v-simple-table height="300px">
+                        <v-simple-table height="200px">
                           <template v-slot:default>
                             <thead>
                               <tr>
