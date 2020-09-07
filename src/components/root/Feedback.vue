@@ -34,10 +34,10 @@
             <v-card-text>
               <v-container>
                 <v-row>
-                  <v-col cols="12" sm="6" md="12">
+                  <v-col cols="12" sm="6" md="12" >
                     <!-- <v-text-field v-model="editedItem.name" label="Dessert name"></v-text-field> -->
                     <v-card-title >App Feedback</v-card-title>
-                      <template>
+                      <template v-if="appFeedback.length>0">
                         <v-simple-table height="300px">
                           <template v-slot:default>
                             <thead>
@@ -55,11 +55,12 @@
                           </template>
                         </v-simple-table>
                       </template>
+                      <template v-else><h3 class="noFeedbackMsg">Sorry! No App Feedback Found</h3></template>
                   </v-col>
                   <v-col cols="12" sm="6" md="12">
                     <!-- <v-text-field v-model="editedItem.name" label="Dessert name"></v-text-field> -->
                     <v-card-title >Chat Feedback</v-card-title>
-                      <template>
+                      <template v-if="chatFeedback.length>0">
                         <v-simple-table height="300px">
                           <template v-slot:default>
                             <thead>
@@ -81,6 +82,7 @@
                           </template>
                         </v-simple-table>
                       </template>
+                      <template v-else><h3 class="noFeedbackMsg">Sorry! No Chat Feedback Found</h3></template>
                   </v-col>
                   
                 </v-row>
@@ -106,7 +108,7 @@
       
     </template>
     <template v-slot:no-data>
-      <v-btn color="primary" @click="initialize">Reset</v-btn>
+      <!-- <v-btn color="primary" @click="initialize">Reset</v-btn> -->
     </template>
   </v-data-table>
   </v-col>
@@ -278,3 +280,7 @@ import moment from 'moment'
     },
   }
 </script>
+
+<style>
+  .noFeedbackMsg { color: red; }
+</style>
