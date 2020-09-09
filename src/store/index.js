@@ -6,7 +6,8 @@ import Vuex from 'vuex'
 import {
   adminLogin,
   givenFeedbackUserList,
-  getFeedbackOfSingleUser
+  getFeedbackOfSingleUser,
+  getAllUserList
 } from '../service/api'
 
 Vue.use(Vuex)
@@ -48,8 +49,12 @@ export default new Vuex.Store({
       return getFeedbackOfSingleUser(conversationId).then(async(response)=>{
         return response;
       })
-    }
-    
+    },
+    GetAllUserList: ()=>{
+      return getAllUserList().then(async(response)=>{
+        return response;
+      })
+    },
   },
   modules: {
   }

@@ -266,6 +266,7 @@ import moment from 'moment'
       //Get Given Feedback UserList
       this.GivenFeedbackUserList()
         .then(res=>{
+          console.log(res.data.userData)
           this.userList = res.data.userData;
           
           this.userList.map(data => { 

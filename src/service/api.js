@@ -10,4 +10,6 @@ export function givenFeedbackUserList(){
 export function getFeedbackOfSingleUser(conversationId){
     return axios.get(BASE_URL+'feedback/getFeedbackByUser/'+conversationId)            
 }
-
+export function getAllUserList(){
+    return axios.get(BASE_URL+'users/getUsersList')            
+}
