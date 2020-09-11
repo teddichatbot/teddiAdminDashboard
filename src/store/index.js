@@ -7,7 +7,8 @@ import {
   adminLogin,
   givenFeedbackUserList,
   getFeedbackOfSingleUser,
-  getAllUserList
+  getAllUserList,
+  getUserChatHistory
 } from '../service/api'
 
 Vue.use(Vuex)
@@ -52,6 +53,11 @@ export default new Vuex.Store({
     },
     GetAllUserList: ()=>{
       return getAllUserList().then(async(response)=>{
+        return response;
+      })
+    },
+    GetUserChatHistory: (context, payload)=>{
+      return getUserChatHistory(payload).then(async(response)=>{
         return response;
       })
     },

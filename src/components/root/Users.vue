@@ -152,7 +152,7 @@
           <v-card>
             <v-container>
               <v-row>
-                <v-col cols="12" sm="12" md="12">
+                <!-- <v-col cols="12" sm="12" md="12">
                    <v-card
                     color="#385F73"
                     dark
@@ -164,98 +164,21 @@
                       "Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."
                     </v-card-text>
                    </v-card>
-                </v-col>
-                <v-col cols="12" sm="12" md="12" >
+                </v-col> -->
+                <v-col cols="12" sm="12" md="12" v-for="(data, index) in chatHistory" :key="index" >
                   <v-card
-                    color="#7D6608"
+                    v-bind:color="data.from.name=='newTeddiBotDev'?'#385F73':'#7D6608'"
                     dark
                   >
                     <v-card-title >
-                      <span class="title font-weight-light">You</span>
+                      <span v-bind:class="data.from.name=='newTeddiBotDev'?'headline':'title font-weight-light'">{{data.from.name=='newTeddiBotDev'?'Teddi':'You'}}</span>
                     </v-card-title>
                     <v-card-text font-weight-bold>
-                      "Turns out semicolon-less style is easier and safer."
+                      {{data.text}}
                     </v-card-text>
                   </v-card>
                 </v-col>
-                <v-col cols="12" sm="12" md="12">
-                   <v-card
-                    color="#385F73"
-                    dark
-                   >
-                    <v-card-title>
-                      <span class="headline">Teddi</span>
-                    </v-card-title>
-                    <v-card-text >
-                      "Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."
-                    </v-card-text>
-                   </v-card>
-                </v-col>
-                <v-col cols="12" sm="12" md="12" >
-                  <v-card
-                    color="#7D6608"
-                    dark
-                  >
-                    <v-card-title >
-                      <span class="title font-weight-light">You</span>
-                    </v-card-title>
-                    <v-card-text font-weight-bold>
-                      "Turns out semicolon-less style is easier and safer."
-                    </v-card-text>
-                  </v-card>
-                </v-col>
-                <v-col cols="12" sm="12" md="12">
-                   <v-card
-                    color="#385F73"
-                    dark
-                   >
-                    <v-card-title>
-                      <span class="headline">Teddi</span>
-                    </v-card-title>
-                    <v-card-text >
-                      "Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."
-                    </v-card-text>
-                   </v-card>
-                </v-col>
-                <v-col cols="12" sm="12" md="12" >
-                  <v-card
-                    color="#7D6608"
-                    dark
-                  >
-                    <v-card-title >
-                      <span class="title font-weight-light">You</span>
-                    </v-card-title>
-                    <v-card-text font-weight-bold>
-                      "Turns out semicolon-less style is easier and safer."
-                    </v-card-text>
-                  </v-card>
-                </v-col>
-                <v-col cols="12" sm="12" md="12">
-                   <v-card
-                    color="#385F73"
-                    dark
-                   >
-                    <v-card-title>
-                      <span class="headline">Teddi</span>
-                    </v-card-title>
-                    <v-card-text >
-                      "Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."
-                    </v-card-text>
-                   </v-card>
-                </v-col>
-                <v-col cols="12" sm="12" md="12" >
-                  <v-card
-                    color="#7D6608"
-                    dark
-                  >
-                    <v-card-title >
-                      <span class="title font-weight-light">You</span>
-                    </v-card-title>
-                    <v-card-text font-weight-bold>
-                      "Turns out semicolon-less style is easier and safer."
-                    </v-card-text>
-                  </v-card>
-                </v-col>
+                
               </v-row>
             </v-container>
             <v-card-actions>
@@ -267,6 +190,43 @@
         </v-dialog>
       </v-toolbar>
     </template>
+
+     <template v-slot:[`item.chatActions`]="{ item }">
+      <div >
+        <v-menu offset-y>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              color="primary"
+              dark
+              v-bind="attrs"
+              v-on="on"
+              
+            >
+              Chapters
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item
+              v-for="(data, index) in chapterList"
+              :key="index"
+              @click="showUserChat(item.conversationId, data.keyName)"
+            >
+              <v-list-item-title>{{ data.originalName }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
+
+      <!-- <v-icon
+        small
+        class="mr-2"
+        @click="showUserChat(item)"
+      >
+        mdi-message-text
+        
+      </v-icon> -->
+    </template>
+
     <template v-slot:[`item.actions`]="{ item }">
       <v-icon
         small
@@ -282,15 +242,7 @@
       >
         mdi-view-dashboard
       </v-icon>
-
-      <v-icon
-        small
-        class="mr-2"
-        @click="showUserChat(item)"
-      >
-        mdi-message-text
-      </v-icon>
-      
+   
     </template>
     <template v-slot:no-data>
       <!-- <v-btn color="primary" @click="initialize">Reset</v-btn> -->
@@ -316,6 +268,7 @@ import moment from 'moment';
         },
         { text: 'Email', value: 'email' },
         { text: 'Register?', value: 'isRegistered' },
+        { text: 'Chat History', value: 'chatActions', sortable: false },
         { text: 'Actions', value: 'actions', sortable: false }
       ],
       desserts: [],
@@ -336,6 +289,7 @@ import moment from 'moment';
       appFeedback: [],
       chatFeedback: [],
       chapterList: [],
+      chatHistory: [],
     }),
 
     computed: {
@@ -359,60 +313,60 @@ import moment from 'moment';
     },
 
     methods: {
-      ...mapActions(["GetAllUserList", "GivenFeedbackUserList", "SingleUserFeedback"]),
+      ...mapActions(["GetAllUserList", "GivenFeedbackUserList", "SingleUserFeedback", "GetUserChatHistory"]),
       initialize () {
          this.chapterList = [
           {
             keyName: 'introduction',
-            originamName: 'Introduction'
+            originalName: 'Introduction'
           },
           {
             keyName: 'breastFeeding',
-            originamName: 'Chapter 1'
+            originalName: 'Chapter 1'
           },
           {
             keyName: 'givingHealth',
-            originamName: 'Chapter 2'
+            originalName: 'Chapter 2'
           },
           {
             keyName: 'chapter3',
-            originamName: 'Chapter 3'
+            originalName: 'Chapter 3'
           },
           {
             keyName: 'chapter4',
-            originamName: 'Chapter 4'
+            originalName: 'Chapter 4'
           },
           {
             keyName: 'chapter5',
-            originamName: 'Chapter 5'
+            originalName: 'Chapter 5'
           },
           {
             keyName: 'chapter6',
-            originamName: 'Chapter 6'
+            originalName: 'Chapter 6'
           },
           {
             keyName: 'chapter7',
-            originamName: 'Chapter 7'
+            originalName: 'Chapter 7'
           },
           {
             keyName: 'chapter8',
-            originamName: 'Chapter 8'
+            originalName: 'Chapter 8'
           },
           {
             keyName: 'chapter9',
-            originamName: 'Chapter 9'
+            originalName: 'Chapter 9'
           },
           {
             keyName: 'chapter10',
-            originamName: 'Chapter 10'
+            originalName: 'Chapter 10'
           },
           {
             keyName: 'chapter11',
-            originamName: 'Chapter 11'
+            originalName: 'Chapter 11'
           },
           {
             keyName: 'chapter12',
-            originamName: 'Chapter 12'
+            originalName: 'Chapter 12'
           }
         ]
       
@@ -443,7 +397,7 @@ import moment from 'moment';
             data.createdOn = moment(String(data.createdOn)).format('DD/MM/YYYY hh:mm A')
             this.chapterList.forEach(element => {
               if(element.keyName == data.chapterType){
-                data.chapterType = element.originamName
+                data.chapterType = element.originalName
               }
             });
             return data;
@@ -455,9 +409,25 @@ import moment from 'moment';
         })
       },
 
-      showUserChat(item){
-        console.log(item)
-        this.dialog3 = true
+      showUserChat(conversationId, chapterType){
+        // console.log(conversationId, chapterType)
+        let payload = {};
+        payload.conversationId = conversationId;
+        payload.chapterType = chapterType;
+        payload.offset = 0;
+        payload.limit = 5000;
+        
+        this.GetUserChatHistory(payload)
+        .then(res=>{
+          // console.log(res.data.chatData);
+          this.chatHistory = res.data.chatData;
+          this.dialog3 = true
+        })
+        .catch((err)=>{
+          console.log(err.response.data)
+          // alert(err.response.data)
+        })
+        
       },
 
       // deleteItem (item) {

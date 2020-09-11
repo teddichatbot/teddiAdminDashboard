@@ -13,3 +13,7 @@ export function getFeedbackOfSingleUser(conversationId){
 export function getAllUserList(){
     return axios.get(BASE_URL+'users/getUsersList')            
 }
+export function getUserChatHistory(payload){
+    return axios.post(BASE_URL+'chat/chatHistory',payload)            
+}
+
