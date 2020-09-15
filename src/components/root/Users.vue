@@ -417,6 +417,7 @@ import moment from 'moment';
           // console.log(res.data.chatData);
           this.chatHistory = res.data.chatData;
           if(this.chatHistory.length>0){
+            this.filteredMsgList = [];
             this.chatHistory.sort((a, b) => a._ts - b._ts);
             for(var i=0; i<this.chatHistory.length; i++){
               if(this.chatHistory[i].from.name == 'newTeddiBotDev'){
@@ -454,7 +455,7 @@ import moment from 'moment';
             }
             
           }else{
-            this.filteredMsgList = []
+            this.filteredMsgList = [];
           }
           
           this.dialog3 = true
