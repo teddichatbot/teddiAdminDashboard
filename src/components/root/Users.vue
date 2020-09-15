@@ -108,7 +108,7 @@
                           </template>
                         </v-simple-table>
                       </template>
-                      <template v-else><h3 class="noFeedbackMsg">Sorry! No App Feedback Found</h3></template>
+                      <template v-else><h3 class="notFound">Sorry! No App Feedback Found</h3></template>
                   </v-col>
                   <v-col cols="12" sm="6" md="12">
                     <v-card-title >Chat Feedback</v-card-title>
@@ -134,7 +134,7 @@
                           </template>
                         </v-simple-table>
                       </template>
-                      <template v-else><h3 class="noFeedbackMsg">Sorry! No Chat Feedback Found</h3></template>
+                      <template v-else><h3 class="notFound">Sorry! No Chat Feedback Found</h3></template>
                   </v-col>
                   
                 </v-row>
@@ -151,36 +151,30 @@
         <v-dialog v-model="dialog3" max-width="850px">
           <v-card>
             <v-container>
-              <v-row>
-                <!-- <v-col cols="12" sm="12" md="12">
-                   <v-card
-                    color="#385F73"
-                    dark
-                   >
-                    <v-card-title>
-                      <span class="headline">Teddi</span>
-                    </v-card-title>
-                    <v-card-text >
-                      "Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."
-                    </v-card-text>
-                   </v-card>
-                </v-col> -->
-                <v-col cols="12" sm="12" md="12" v-for="(data, index) in chatHistory" :key="index" >
-                  <v-card
-                    v-bind:color="data.from.name=='newTeddiBotDev'?'#385F73':'#7D6608'"
-                    dark
-                  >
-                    <v-card-title >
-                      <span v-bind:class="data.from.name=='newTeddiBotDev'?'headline':'title font-weight-light'">{{data.from.name=='newTeddiBotDev'?'Teddi':'You'}}</span>
-                    </v-card-title>
-                    <v-card-text font-weight-bold>
-                      {{data.text}}
-                    </v-card-text>
-                  </v-card>
-                </v-col>
-                
-              </v-row>
+              <v-row>   
+                <template v-if="filteredMsgList.length>0">        
+                  <v-col cols="12" sm="12" md="12" v-for="(data, index) in filteredMsgList" :key="index" >
+                    <v-card
+                      v-bind:color="data.from.name=='newTeddiBotDev'?'#385F73':'#7D6608'"
+                      dark
+                    >
+                      <v-card-title >
+                        <span v-bind:class="data.from.name=='newTeddiBotDev'?'headline':'title font-weight-light'">{{data.from.name=='newTeddiBotDev'?'Teddi':'You'}}</span>
+                      </v-card-title>
+                      <v-card-text font-weight-bold v-html="data.text">
+                        <!-- {{data.text}} -->
+                      </v-card-text>
+                    </v-card>
+                  </v-col>
+                </template> 
+                <template v-else> 
+                  <v-col cols="12" sm="12" md="12">
+                    <v-card-title class="notFound">Sorry! No Messages found.</v-card-title>
+                  </v-col>
+                </template> 
+              </v-row>             
             </v-container>
+            
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
@@ -290,6 +284,7 @@ import moment from 'moment';
       chatFeedback: [],
       chapterList: [],
       chatHistory: [],
+      filteredMsgList: []
     }),
 
     computed: {
@@ -421,10 +416,51 @@ import moment from 'moment';
         .then(res=>{
           // console.log(res.data.chatData);
           this.chatHistory = res.data.chatData;
+          if(this.chatHistory.length>0){
+            this.chatHistory.sort((a, b) => a._ts - b._ts);
+            for(var i=0; i<this.chatHistory.length; i++){
+              if(this.chatHistory[i].from.name == 'newTeddiBotDev'){
+                
+                let msgArr = this.chatHistory[i].text.split('#&@#')
+                for(var j=0; j<msgArr.length; j++){
+                  if( (msgArr[j].indexOf("enterBtn") == -1) && (msgArr[j].indexOf("predictiveText") == -1) && (msgArr[j].indexOf("selectImage") == -1) && (msgArr[j] !== '')){
+                    msgArr[j] = msgArr[j].replaceAll(/\n\n/g,'<br />');
+                    
+                    let count = 1;
+                    while (msgArr[j].includes('**')) {
+                      msgArr[j] = count % 2 !== 0 ? msgArr[j].replace("**", "<strong>") : msgArr[j].replace("**", "</strong>");
+                      count++;
+                    }
+
+                    this.filteredMsgList.push({
+                      timestamp: this.chatHistory[i].timestamp,
+                      from: this.chatHistory[i].from,
+                      conversation: this.chatHistory[i].conversation,
+                      text: msgArr[j],
+                      chapterType: this.chatHistory[i].chapterType
+                    })
+                  }
+                  
+                }
+              }else{
+                this.filteredMsgList.push({
+                  timestamp: this.chatHistory[i].timestamp,
+                  from: this.chatHistory[i].from,
+                  conversation: this.chatHistory[i].conversation,
+                  text: this.chatHistory[i].text,
+                  chapterType: this.chatHistory[i].chapterType
+                })
+              }
+            }
+            
+          }else{
+            this.filteredMsgList = []
+          }
+          
           this.dialog3 = true
         })
         .catch((err)=>{
-          console.log(err.response.data)
+          console.log(err)
           // alert(err.response.data)
         })
         
@@ -473,5 +509,5 @@ import moment from 'moment';
   }
 </script>
 <style>
-  .noFeedbackMsg { color: red; }
+  .notFound { color: red; }
 </style>
