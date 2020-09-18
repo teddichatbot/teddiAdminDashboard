@@ -36,6 +36,14 @@
             <v-list-item-title>Feedback</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item :to="{name : 'Random Messages'}">
+          <v-list-item-action>
+            <v-icon> mdi-comment-text</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Random Message</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
     

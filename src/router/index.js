@@ -49,6 +49,14 @@ Vue.use(VueRouter)
           requiresAuth: true
         } 
       },
+      {
+        name: 'Random Messages',
+        path: '/randomMessage',
+        component: () => import('../views/main/RandomMsgView.vue'),
+        meta: {
+          requiresAuth: true
+        } 
+      },
     ]
   },
 ]
