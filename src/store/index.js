@@ -8,7 +8,10 @@ import {
   givenFeedbackUserList,
   getFeedbackOfSingleUser,
   getAllUserList,
-  getUserChatHistory
+  getUserChatHistory,
+  getRandomMsgListByChapterName,
+  addRandomMsg,
+  updateRandomMsg
 } from '../service/api'
 
 Vue.use(Vuex)
@@ -58,6 +61,21 @@ export default new Vuex.Store({
     },
     GetUserChatHistory: (context, payload)=>{
       return getUserChatHistory(payload).then(async(response)=>{
+        return response;
+      })
+    },
+    GetRandomMsgListByChapterName: (context, chapterName)=>{
+      return getRandomMsgListByChapterName(chapterName).then(async(response)=>{
+        return response;
+      })
+    },
+    AddRandomMsg: (context, payload)=>{
+      return addRandomMsg(payload).then(async(response)=>{
+        return response;
+      })
+    },
+    UpdateRandomMsg: (context, payload)=>{
+      return updateRandomMsg(payload).then(async(response)=>{
         return response;
       })
     },

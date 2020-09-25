@@ -16,4 +16,12 @@ export function getAllUserList(){
 export function getUserChatHistory(payload){
     return axios.post(BASE_URL+'chat/chatHistory',payload)            
 }
-
+export function getRandomMsgListByChapterName(chapterName){
+    return axios.get(BASE_URL+'randomMsg/msgListByChapter?chapterType='+chapterName)            
+}
+export function addRandomMsg(payload){
+    return axios.post(BASE_URL+'randomMsg/addRandomMsg',payload)            
+}
+export function updateRandomMsg(payload){
+    return axios.post(BASE_URL+'randomMsg/UpdateRandomMsg',payload)            
+}
