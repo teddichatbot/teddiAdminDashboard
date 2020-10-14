@@ -1,6 +1,7 @@
 <template>
     <v-col cols=12>
         <template>
+            <v-form v-model="valid">
             <v-container fluid>
                 <v-row align="center">
                     <v-col class="d-flex" cols="12" sm="6" md="4">
@@ -23,8 +24,28 @@
                             Add New
                         </v-btn>
                     </v-col>
+                    <v-col cols="12" sm="6" md="8">
+                        
+                        <v-text-field
+                            v-model="searchingFaq"
+                            :rules="[v => !!v || 'Item is required']"
+                            required
+                            placeholder="Searching...."
+                            
+                        ></v-text-field>
+                        
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                        <v-btn
+                            color="primary"
+                            @click="findFaq"
+                        >
+                            Find FAQ
+                        </v-btn>
+                    </v-col>
                 </v-row>
             </v-container>
+            </v-form>
         </template>
         <template>
             <div class="text-center">
@@ -238,7 +259,9 @@ export default {
         getQuestion: '',
         getAnswer: '',
         getSearchingWords: [],
-        getFaqId: ''
+        getFaqId: '',
+        searchingFaq: '',
+        valid: false,
     }),
     methods: {
         ...mapActions(["GetFaqListByChapterName", "AddFaq", "UpdateFaq", "SearchFaq", "DeleteFaq"]),
@@ -338,11 +361,14 @@ export default {
             this.showLoader = true;
             try{
                 let searchResult = await this.SearchFaq(this.getQuestion);            
-                if(searchResult.status == 200){
-                    alert('This question is already matched of another combination of searching words.')
+                if(searchResult.data.status == 200){
+                    alert('This question is already matched of another combination of searching words.');
+                    this.showLoader = false;
                 }else{
                     this.AddFaq(payload).then(async()=>{
-                        await this.chapterWiseFaqList();
+                        if(this.selectedChapter !== ''){
+                            await this.chapterWiseFaqList();
+                        }                       
                         this.showLoader = false;
                         alert("FAQ added successfully")
                         this.dialog= false
@@ -368,6 +394,34 @@ export default {
                 .catch(err=>{
                     console.log('err in delete Faq', err)
                 })
+            }
+        },
+        async findFaq(){
+            if(this.searchingFaq == ''){
+                alert('Searching item is required.');
+                return false;
+            }
+            
+            try{
+                let searchResult = await this.SearchFaq(this.searchingFaq); 
+                
+                if(searchResult.data.status == 200){
+                    // this.selectedChapter = '';
+                    this.faqList = [];
+                    this.faqList.push(searchResult.data.data);
+                    this.faqList.map(data => { 
+                        this.chapterList.forEach(element => {
+                            if(element.keyName == data.chapterName){
+                                data.chapterName = element.originalName
+                            }
+                        })
+                        return data;
+                    });
+                }else{
+                    alert('No data found')
+                }           
+            }catch(e){
+                console.log(e)
             }
         }
     }
