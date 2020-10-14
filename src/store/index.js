@@ -11,7 +11,12 @@ import {
   getUserChatHistory,
   getRandomMsgListByChapterName,
   addRandomMsg,
-  updateRandomMsg
+  updateRandomMsg,
+  getFAQListByChapterName,
+  addFaq,
+  updateFaq,
+  searchFaq,
+  deleteFaq
 } from '../service/api'
 
 Vue.use(Vuex)
@@ -76,6 +81,34 @@ export default new Vuex.Store({
     },
     UpdateRandomMsg: (context, payload)=>{
       return updateRandomMsg(payload).then(async(response)=>{
+        return response;
+      })
+    },
+    GetFaqListByChapterName: (context, chapterName)=>{
+      return getFAQListByChapterName(chapterName).then(async(response)=>{
+        return response;
+      })
+    },
+    AddFaq: (context, payload)=>{
+      return addFaq(payload).then(async(response)=>{
+        return response;
+      })
+    },
+    UpdateFaq: (context, payload)=>{
+      return updateFaq(payload).then(async(response)=>{
+        return response;
+      })
+    },
+    SearchFaq: (context, question)=>{
+      let payload = {
+        faq: question
+      }
+      return searchFaq(payload).then(async(response)=>{
+        return response;
+      })
+    },
+    DeleteFaq: (context, faqId)=>{
+      return deleteFaq(faqId).then(async(response)=>{
         return response;
       })
     },
