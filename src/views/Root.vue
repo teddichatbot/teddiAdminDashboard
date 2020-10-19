@@ -6,7 +6,7 @@
     
     <Header/>
 
-    <v-content>
+    <v-main>
       
       <v-container>
         <v-row>
@@ -15,7 +15,7 @@
         </v-row>
       </v-container>
        
-    </v-content>
+    </v-main>
     
     <Footer/>
   </v-app>

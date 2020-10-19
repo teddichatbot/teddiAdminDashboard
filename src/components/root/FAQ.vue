@@ -306,6 +306,7 @@ export default {
                 alert("Invalid Selective Words field");
                 return false;
             }
+            // console.log(this.getAnswer)
             let payload = {
                 faq: this.getSearchingWords,
                 question: this.getQuestion,
