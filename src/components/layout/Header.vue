@@ -5,7 +5,7 @@
       dark
     >
       <!-- <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon> -->
-      <v-toolbar-title>Teddi Admin Panel dev2</v-toolbar-title>
+      <v-toolbar-title>Teddi Admin Panel</v-toolbar-title>
       <v-row>
         <v-col
         cols="12"
