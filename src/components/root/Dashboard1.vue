@@ -75,20 +75,9 @@
                     class="mx-auto"
                     max-width="344"
                 >
-                    <GmapMap 
-                        map-type-id="roadmap" 
-                        :zoom="2" 
-                        :center="{lat: 53.4808, lng: -2.2426}" 
-                        style="width: 1000px; height: 400px">
-                        <GmapCluster :zoomOnClick="true">
-                            <GmapMarker 
-                                v-for="(m, index) in markers" :key="index" 
-                                :position="m.position" 
-                            />
-                        </GmapCluster>
-                        
-                    </GmapMap>  
-                               
+                    <div id="map">
+                        <!-- <map-marker :lat="22.5676" :lng="88.3707"></map-marker> -->
+                    </div>
                 </v-card>
             </v-col>
         </v-row>
@@ -96,67 +85,54 @@
 </template>
 
 <script>
-import {mapState, mapActions} from 'vuex'
-import Vue from 'vue'
-import * as VueGoogleMaps from 'vue2-google-maps'
-import GmapCluster from 'vue2-google-maps/dist/components/cluster'
-
-Vue.use(VueGoogleMaps, {
-  load: {
-    key: 'AIzaSyAyXZK5sxYTIzCdsdiP75n-3mvDhmyUYDY',
-    libraries: 'places',
-  },
- 
-})
-Vue.component('GmapCluster', GmapCluster)
-
+import {mapState} from 'vuex'
+import $Scriptjs from 'scriptjs';
 export default {
     data () {
         return{
             msg: 'Dashboard Page',
-            markers: [],
-            totalUsers: 0,
-            activeUsers: 0,
-            inactiveUsers: 0,
+            map: null,
+            googleMapApiKey: 'AIzaSyAyXZK5sxYTIzCdsdiP75n-3mvDhmyUYDY',
         }
         
     },
     computed: {
         ...mapState(['isLoggedIn'])
     },
-    mounted(){
-    //     this.$refs.mapRef.$mapPromise.then((map) => {
-    //   map.panTo({lat: 1.38, lng: 103.80})
-    // })
+    beforeMount: function (){
+        $Scriptjs("https://maps.googleapis.com/maps/api/js?key="+this.googleMapApiKey+"&libraries=geometry,places", () => {
+            this.initMap();
+        });
     },
     methods: {
-        ...mapActions(["GetAllUserList"]),
-      
         beforeOpen: function () {
             console.log("open")
             console.log(this.isLoggedIn)
         },
-        
+        initMap() {
+            this.map = new window.google.maps.Map(document.getElementById("map"), {
+                center: {
+                    lat: 22.5726,
+                    lng: 88.3639
+                },
+                zoom: 15
+            })
+            new window.google.maps.Marker({
+                position: {
+                    lat: 22.5726,
+                    lng: 88.3639
+                },
+                map: this.map
+            })
+        }
     },
-    beforeMount(){
-      this.GetAllUserList()
-        .then(res=>{
-            this.totalUsers= res.data.userData.length
-            console.log(this.totalUsers)
-            res.data.userData.forEach(element => {
-                if(element.lat){
-                    let obj= {};
-                    obj.position= {};
-                    obj.position.lat= parseFloat(element.lat);
-                    obj.position.lng= parseFloat(element.long);                   
-                    this.markers.push(obj)
-                }               
-            });
-        })
-        .catch((err)=>{
-          alert(err.response.data.msg)
-        })
-    },
+    
 }
 </script>
 
+<style>
+#map {
+  width: 77vw;
+  height: 30vw;
+}
+</style>
