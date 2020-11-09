@@ -9,7 +9,7 @@
             </v-col>
             <v-col
                 cols="12"
-                md="4"
+                md="6"
             >
                 <v-card
                     class="mx-auto"
@@ -20,7 +20,7 @@
                         <v-list-item-content>
                             <!-- <div class="overline mb-4">OVERLINE</div> -->
                             <v-list-item-title class="headline mb-1">Total User</v-list-item-title>
-                            <v-list-item-subtitle>500</v-list-item-subtitle>
+                            <v-list-item-subtitle >{{totalUsers}}</v-list-item-subtitle>
                         </v-list-item-content>
 
                     </v-list-item>
@@ -28,7 +28,7 @@
             </v-col>
             <v-col
                 cols="12"
-                md="4"
+                md="6"
             >
                 <v-card
                     class="mx-auto"
@@ -39,33 +39,14 @@
                         <v-list-item-content>
                             <!-- <div class="overline mb-4">OVERLINE</div> -->
                             <v-list-item-title class="headline mb-1">Active User</v-list-item-title>
-                            <v-list-item-subtitle>300</v-list-item-subtitle>
+                            <v-list-item-subtitle >{{activeUsers}}</v-list-item-subtitle>
                         </v-list-item-content>
 
                     </v-list-item>
 
                 </v-card>
             </v-col>
-            <v-col
-                cols="12"
-                md="4"
-            >
-                <v-card
-                    class="mx-auto"
-                    max-width="344"
-                    outlined
-                >
-                    <v-list-item three-line>
-                        <v-list-item-content>
-                            <!-- <div class="overline mb-4">OVERLINE</div> -->
-                            <v-list-item-title class="headline mb-1">Inactive User</v-list-item-title>
-                            <v-list-item-subtitle>200</v-list-item-subtitle>
-                        </v-list-item-content>
-
-                    </v-list-item>
-                </v-card>
             
-            </v-col>
             <v-col
                 cols="12"
                 md="4"
@@ -82,9 +63,13 @@
                         style="width: 1000px; height: 400px">
                         <GmapCluster :zoomOnClick="true">
                             <GmapMarker 
-                                v-for="(m, index) in markers" :key="index" 
-                                :position="m.position" 
+                                :key="index"
+                                v-for="(m, index) in markers"  
+                                :position="m" 
                             />
+                            <!-- <GmapMarker :position="{lat: 53.4808, lng: -2.2426}" />
+                            <GmapMarker :position="{lat: 53.4630, lng: -2.2900}" />
+                            <GmapMarker :position="{lat: 53.4640, lng: -2.2702}" /> -->
                         </GmapCluster>
                         
                     </GmapMap>  
@@ -128,6 +113,7 @@ export default {
     //     this.$refs.mapRef.$mapPromise.then((map) => {
     //   map.panTo({lat: 1.38, lng: 103.80})
     // })
+        
     },
     methods: {
         ...mapActions(["GetAllUserList"]),
@@ -142,13 +128,13 @@ export default {
       this.GetAllUserList()
         .then(res=>{
             this.totalUsers= res.data.userData.length
-            console.log(this.totalUsers)
+            this.activeUsers = res.data.userData.filter(data => parseInt((Date.now() - data.convEndTime)/1000)< 86400).length;
+            
             res.data.userData.forEach(element => {
                 if(element.lat){
                     let obj= {};
-                    obj.position= {};
-                    obj.position.lat= parseFloat(element.lat);
-                    obj.position.lng= parseFloat(element.long);                   
+                    obj.lat= parseFloat(element.lat);
+                    obj.lng= parseFloat(element.long);               
                     this.markers.push(obj)
                 }               
             });
