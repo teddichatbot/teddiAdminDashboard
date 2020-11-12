@@ -44,7 +44,14 @@
             <v-list-item-title>Random Message</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        
+        <v-list-item :to="{name : 'Postcodes'}">
+          <v-list-item-action>
+            <v-icon> mdi-view-quilt</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Postcodes</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>       
       </v-list>
     </v-navigation-drawer>
     

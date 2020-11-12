@@ -40,3 +40,18 @@ export function searchFaq(payload){
 export function deleteFaq(faqId){
     return axios.delete(BASE_URL+'chapterFaq/deleteSignleFaq?faqId='+faqId)            
 }
+export function getAllPostcodes(){
+    return axios.get(BASE_URL+'postcodes/getAllPostcodes')            
+}
+export function uploadPostcodes(payload){
+    return axios.post(BASE_URL+'postcodes/addBulkPostcodes',payload)            
+}
+export function getAllPostcodeFiles(){
+    return axios.get(BASE_URL+'postcodes/getAllPostcodeFiles')            
+}
+export function getPostcodesByFileName(fileName){
+    return axios.get(BASE_URL+'postcodes/getAllPostcodesByFile?location='+fileName)            
+}
+export function deleteFileWithPostcodes(fileName){
+    return axios.delete(BASE_URL+'postcodes/deleteFileWithPostcodes?location='+fileName)            
+}

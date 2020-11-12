@@ -57,6 +57,14 @@ Vue.use(VueRouter)
           requiresAuth: true
         } 
       },
+      {
+        name: 'Postcodes',
+        path: '/postcodes',
+        component: () => import('../views/main/PostcodesView.vue'),
+        meta: {
+          requiresAuth: true
+        } 
+      },
     ]
   },
 ]

@@ -16,7 +16,12 @@ import {
   addFaq,
   updateFaq,
   searchFaq,
-  deleteFaq
+  deleteFaq,
+  getAllPostcodes,
+  uploadPostcodes,
+  getAllPostcodeFiles,
+  getPostcodesByFileName,
+  deleteFileWithPostcodes
 } from '../service/api'
 
 Vue.use(Vuex)
@@ -109,6 +114,31 @@ export default new Vuex.Store({
     },
     DeleteFaq: (context, faqId)=>{
       return deleteFaq(faqId).then(async(response)=>{
+        return response;
+      })
+    },
+    GetAllPostcodes: ()=>{
+      return getAllPostcodes().then(async(response)=>{
+        return response;
+      })
+    },
+    UploadPostcodes: (context, payload)=>{
+      return uploadPostcodes(payload).then(async(response)=>{
+        return response;
+      })
+    },
+    GetAllPostcodeFiles: ()=>{
+      return getAllPostcodeFiles().then(async(response)=>{
+        return response;
+      })
+    },
+    GetPostcodesByFileName: (context, fileName)=>{
+      return getPostcodesByFileName(fileName).then(async(response)=>{
+        return response;
+      })
+    },
+    DeleteFileWithPostcodes: (context, fileName)=>{
+      return deleteFileWithPostcodes(fileName).then(async(response)=>{
         return response;
       })
     },
