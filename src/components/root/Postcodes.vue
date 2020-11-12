@@ -186,7 +186,7 @@ import { mapActions } from "vuex";
               // console.log(res.data);
               this.showLoader=false;
               alert("file upload successfully")
-              
+              window.location.reload();
             })
             .catch((err)=>{
               console.log(err)
