@@ -55,3 +55,9 @@ export function getPostcodesByFileName(fileName){
 export function deleteFileWithPostcodes(fileName){
     return axios.delete(BASE_URL+'postcodes/deleteFileWithPostcodes?location='+fileName)            
 }
+export function addPostcode(payload){
+    return axios.post(BASE_URL+'postcodes/addPostcode',payload)            
+}
+export function getSinglePostcode(itemName){
+    return axios.get(BASE_URL+'postcodes/getSinglePostcodeDetails?postcode='+itemName)            
+}

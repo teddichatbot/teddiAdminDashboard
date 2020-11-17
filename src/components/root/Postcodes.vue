@@ -35,17 +35,17 @@
         </v-col>
         <v-col cols="12" sm="6" md="6">
           <v-row>
-            <v-col cols="12" md="8">
+            <v-col cols="12" md="6">
               <v-select
                 v-model="selectedFile"
                 :items="fileList"
                 
-                label="--Select Chapter--"
+                label="--Select File--"
                 solo
                 @change="fileWisePostcodes"
               ></v-select>
             </v-col>
-            <v-col cols="12" md="4">
+            <v-col cols="12" md="6">
               <v-btn
                   color="error"
                   @click="deletePostcodeFile"
@@ -55,6 +55,66 @@
               </v-btn>   
             </v-col>
           </v-row>
+        </v-col>
+      </v-row>
+      <v-divider class="mt-12" ></v-divider>
+      <v-row>
+        <v-col cols="12" sm="6" md="6">
+         <template ref="form">
+          <v-row>
+            <v-col cols="12" sm="6" md="4">
+              <v-text-field
+                ref="refPostcode"
+                v-model="setPostcode"
+                :rules="[() => !!setPostcode || 'This field is required']"
+                label="Post Code"
+                required
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="6" md="5">
+              <v-select
+                ref="refLocation"
+                :items="fileList"
+                v-model="setLocation"
+                :rules="[() => !!setLocation || 'This field is required']"
+                label="--Select Location--"
+                solo              
+                required
+              ></v-select>
+            </v-col>
+            <v-col cols="12" md="3">
+              <v-btn
+                  color="primary"
+                  @click="addPostcode"
+              >
+                  Add
+              </v-btn>   
+            </v-col>
+          </v-row>
+         </template> 
+        </v-col>
+        <v-col cols="12" sm="6" md="6">
+          <template ref="searchform">
+            <v-row>
+              <v-col cols="12" sm="6" md="8">
+                <v-text-field
+                    v-model="searchPostcode"
+                    ref="refSearchPostcode"
+                    :rules="[v => !!v || 'Item is required']"
+                    required
+                    placeholder="Postcode"                
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6" md="4">
+                  <v-btn
+                      color="primary"
+                      @click="findPostcode"
+                  >
+                      Search
+                  </v-btn>
+              </v-col>
+            </v-row>
+          </template> 
         </v-col>
       </v-row>
     </template>
@@ -68,53 +128,53 @@
           ></v-progress-circular>
       </div>
     </template>
-  <v-data-table
-    :headers="headers"
-    :items="postcodeList"
-    sort-by="calories"
-    class="elevation-1"
-  >
-    <template v-slot:top>
-      <v-toolbar flat color="white">
-        <v-toolbar-title>Postcodes List</v-toolbar-title> 
-        <v-subheader>Total: {{totalCount}}</v-subheader>        
-        <v-dialog v-model="dialog" max-width="800px">
-          <v-card>
-            <v-card-title>
-              <span class="headline">View Feedback</span>
-            </v-card-title>
+    <v-data-table
+      :headers="headers"
+      :items="postcodeList"
+      sort-by="calories"
+      class="elevation-1"
+    >
+      <template v-slot:top>
+        <v-toolbar flat color="white">
+          <v-toolbar-title>Postcodes List</v-toolbar-title> 
+          <v-subheader>Total: {{totalCount}}</v-subheader>        
+          <!-- <v-dialog v-model="dialog" max-width="800px">
+            <v-card>
+              <v-card-title>
+                <span class="headline">View Feedback</span>
+              </v-card-title>
 
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  
-                  
-                </v-row>
-              </v-container>
-            </v-card-text>
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    
+                    
+                  </v-row>
+                </v-container>
+              </v-card-text>
 
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="close">close</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-toolbar>
-    </template>
-    <template v-slot:[`item.actions`]="{ item }">
-      <v-icon
-        small
-        class="mr-2"
-        @click="viewItem(item)"
-      >
-        mdi-eye
-      </v-icon>
-      
-    </template>
-    <template v-slot:no-data>
-      <!-- <v-btn color="primary" @click="initialize">Reset</v-btn> -->
-    </template>
-  </v-data-table>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="close">close</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog> -->
+        </v-toolbar>
+      </template>
+      <!-- <template v-slot:[`item.actions`]="{ item }">
+        <v-icon
+          small
+          class="mr-2"
+          @click="viewItem(item)"
+        >
+          mdi-eye
+        </v-icon>
+        
+      </template> -->
+      <template v-slot:no-data>
+        <!-- <v-btn color="primary" @click="initialize">Reset</v-btn> -->
+      </template>
+    </v-data-table>
   </v-col>
 </template>
 
@@ -135,17 +195,32 @@ import { mapActions } from "vuex";
           value: 'postcode',
         },
         { text: 'Location', value: 'location' },
-        { text: 'Actions', value: 'actions', sortable: false },
+        // { text: 'Actions', value: 'actions', sortable: false },
       ],
       postcodeList: [],
       files: [],
       selectedFile: '',
       fileList: [],
-      fileDltBtn: false
+      fileDltBtn: false,
+      setPostcode: null,
+      setLocation: null,
+      formHasErrors: false,
+      searchFormHasErrors: false,
+      searchPostcode: ''
     }),
 
     computed: {
-      
+      form () {
+        return {
+          refPostcode: this.setPostcode,
+          refLocation: this.setLocation,
+        }
+      },
+      searchform(){
+        return {
+          refSearchPostcode: this.searchPostcode,
+        }
+      }
     },
 
     watch: {
@@ -159,7 +234,8 @@ import { mapActions } from "vuex";
     },
 
     methods: {
-      ...mapActions(["GetAllPostcodes", "UploadPostcodes", "GetAllPostcodeFiles", "GetPostcodesByFileName", "DeleteFileWithPostcodes"]),
+      ...mapActions(["GetAllPostcodes", "UploadPostcodes", "GetAllPostcodeFiles", "GetPostcodesByFileName", "DeleteFileWithPostcodes", "AddPostcode",
+      "GetSinglePostcode"]),
 
       initialize () {
         
@@ -216,16 +292,71 @@ import { mapActions } from "vuex";
       },
       deletePostcodeFile(){       
         this.showLoader=true;
-        this.DeleteFileWithPostcodes(this.selectedFile).then(()=>{
-          alert('Deleted Successfully')
-          this.showLoader=false;
-          window.location.reload();
+        if (window.confirm("Are you sure want to delete?")) { 
+          this.DeleteFileWithPostcodes(this.selectedFile).then(()=>{
+            alert('Deleted Successfully')
+            this.showLoader=false;
+            window.location.reload();
+          })
+          .catch(err=>{
+            console.log(err)
+            this.showLoader=false;
+          })
+        }       
+      },
+      addPostcode () {
+        this.formHasErrors = false
+        Object.keys(this.form).forEach(f => {
+          
+          if (!this.form[f]) this.formHasErrors = true
+          this.$refs[f].validate(true)
         })
-        .catch(err=>{
-          console.log(err)
-          this.showLoader=false;
+        if(!this.formHasErrors){
+          // console.log(this.form)
+          let payload = {
+            postcode: this.form.refPostcode,
+            location: this.form.refLocation
+          }
+          // console.log(payload)        
+          this.AddPostcode(payload).then(()=>{
+            alert('Postcode Added')
+            this.GetAllPostcodes()
+            .then(res=>{
+              this.totalCount = res.data.postcodeList.length
+              this.postcodeList = res.data.postcodeList
+            })
+            .catch((err)=>{
+              console.log(err)
+            })
+          })
+          .catch(err=>{
+            console.log(err)
+          })
+        }        
+      },
+      findPostcode(){
+        this.searchFormHasErrors = false
+        Object.keys(this.searchform).forEach(f => {
+          
+          if (!this.searchform[f]) this.searchFormHasErrors = true
+          this.$refs[f].validate(true)
         })
-      }
+        if(!this.searchFormHasErrors){
+          this.GetSinglePostcode(this.searchform.refSearchPostcode).then(res=>{
+            // console.log(res)
+            if(res.data.status == 200){
+              this.totalCount = 1
+              this.postcodeList = [];
+              this.postcodeList.push(res.data.postcodeData)
+            }else{
+              alert('No data found')
+            }
+          })
+          .catch(err=>{
+            console.log(err)
+          })
+        }
+      },
     },
     beforeMount(){
       this.GetAllPostcodes()

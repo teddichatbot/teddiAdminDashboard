@@ -21,7 +21,9 @@ import {
   uploadPostcodes,
   getAllPostcodeFiles,
   getPostcodesByFileName,
-  deleteFileWithPostcodes
+  deleteFileWithPostcodes,
+  addPostcode,
+  getSinglePostcode
 } from '../service/api'
 
 Vue.use(Vuex)
@@ -142,6 +144,17 @@ export default new Vuex.Store({
         return response;
       })
     },
+    GetSinglePostcode: (context, itemName)=>{
+      return getSinglePostcode(itemName).then(async(response)=>{
+        return response;
+      })
+    },
+    AddPostcode: (context, payload)=>{
+      return addPostcode(payload).then(async(response)=>{
+        return response;
+      })
+    },
+
   },
   modules: {
   }
