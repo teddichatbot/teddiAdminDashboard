@@ -61,3 +61,6 @@ export function addPostcode(payload){
 export function getSinglePostcode(itemName){
     return axios.get(BASE_URL+'postcodes/getSinglePostcodeDetails?postcode='+itemName)            
 }
+export function getUserListByPostcode(itemName){
+    return axios.get(BASE_URL+'users/getUsersListByPostcode?zip_code='+itemName)            
+}

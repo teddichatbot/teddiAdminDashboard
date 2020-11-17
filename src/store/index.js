@@ -23,7 +23,8 @@ import {
   getPostcodesByFileName,
   deleteFileWithPostcodes,
   addPostcode,
-  getSinglePostcode
+  getSinglePostcode,
+  getUserListByPostcode
 } from '../service/api'
 
 Vue.use(Vuex)
@@ -153,8 +154,12 @@ export default new Vuex.Store({
       return addPostcode(payload).then(async(response)=>{
         return response;
       })
+    }, 
+    GetUserListByPostcode: (context, itemName)=>{
+      return getUserListByPostcode(itemName).then(async(response)=>{
+        return response;
+      })
     },
-
   },
   modules: {
   }

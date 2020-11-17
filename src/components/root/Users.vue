@@ -1,247 +1,274 @@
 <template>
   <v-col cols=12>
-  <v-data-table
-    :headers="headers"
-    :items="userList"
-    class="elevation-1"
-  >
-    <template v-slot:top>
-      <v-toolbar flat color="white">
-        <v-toolbar-title>User List</v-toolbar-title>
-        
-        <v-spacer></v-spacer>
-        <v-dialog v-model="dialog" max-width="650px">
+    <template>
+      <v-row>
+        <v-col cols="12" sm="6" md="6">
+          <template ref="searchform">
+            <v-row>
+              <v-col cols="12" sm="6" md="8">
+                <v-text-field
+                    v-model="searchPostcode"
+                    ref="refSearchPostcode"
+                    :rules="[v => !!v || 'Item is required']"
+                    required
+                    placeholder="Postcode"                
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6" md="4">
+                  <v-btn
+                      color="primary"
+                      @click="findUserListByPostcode"
+                  >
+                      Search
+                  </v-btn>
+              </v-col>
+            </v-row>
+          </template> 
+        </v-col>
+      </v-row>
+    </template>
+    <v-data-table
+      :headers="headers"
+      :items="userList"
+      class="elevation-1"
+    >
+      <template v-slot:top>
+        <v-toolbar flat color="white">
+          <v-toolbar-title>User List</v-toolbar-title>
           
-          <v-card>
-            <v-card-title>
-              <span class="headline">View User Details</span>
-            </v-card-title>
-
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-if="singleUserItem.fullName.trim()!=''" v-model="singleUserItem.fullName" label="Full Name" readonly></v-text-field>
-                   <v-text-field v-else value="NA"  label="Full Name" readonly></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-if="singleUserItem.email!=''" v-model="singleUserItem.email" label="Email Id" readonly></v-text-field>
-                    <v-text-field v-else value="NA"  label="Email Id" readonly></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-if="singleUserItem.registerCompleted" value="Yes" label="Registered?" readonly></v-text-field>
-                    <v-text-field v-else value="No"  label="Registered?" readonly></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-if="singleUserItem.registrationDate!=''" v-model="singleUserItem.registrationDate" label="Registered Date" readonly></v-text-field>
-                  </v-col>
-                  <v-col v-if="singleUserItem.child_data.length>0" cols="12" sm="12" md="12">
-                    <v-simple-table height="100px">
-                      <template v-slot:default>
-                        <thead>
-                          <tr>
-                            <th class="text-left">Child Birthday</th>
-                            <th class="text-left">Child Gender</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr v-for="item in singleUserItem.child_data" :key="item.id">
-                            <td>{{ item.child_dob }}</td>
-                            <td>{{ item.child_gender }}</td>
-                          </tr>
-                        </tbody>
-                      </template>
-                    </v-simple-table>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-if="singleUserItem.parent_age_range!=''" v-model="singleUserItem.parent_age_range" label="Parent Age Range" readonly></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-if="singleUserItem.parent_gender!=''" v-model="singleUserItem.parent_gender" label="Parent Gender" readonly></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-if="singleUserItem.zip_code!=''" v-model="singleUserItem.zip_code" label="Zip Code" readonly></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-if="singleUserItem.occupation!=''" v-model="singleUserItem.occupation" label="Occupation" readonly></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-if="singleUserItem.ethnicity.trim()!='/'" v-model="singleUserItem.ethnicity" label="Ethnicity" readonly></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-
-        <v-dialog v-model="dialog2" max-width="650px">
-          <v-card>
-            <v-card-title>
-              <span class="headline">View User's Feedback</span>
-            </v-card-title>
-
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col cols="12" sm="6" md="12" >
-                    <v-card-title >App Feedback</v-card-title>
-                      <template v-if="appFeedback.length>0">
-                        <v-simple-table height="200px">
-                          <template v-slot:default>
-                            <thead>
-                              <tr>
-                                <th class="text-left">Feedback</th>
-                                <th class="text-left">Created On</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr v-for="item in appFeedback" :key="item.id">
-                                <td>{{ item.feedbackMsg }}</td>
-                                <td>{{ item.createdOn }}</td>
-                              </tr>
-                            </tbody>
-                          </template>
-                        </v-simple-table>
-                      </template>
-                      <template v-else><h3 class="notFound">Sorry! No App Feedback Found</h3></template>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="12">
-                    <v-card-title >Chat Feedback</v-card-title>
-                      <template v-if="chatFeedback.length>0">
-                        <v-simple-table height="200px">
-                          <template v-slot:default>
-                            <thead>
-                              <tr>
-                                <th class="text-left">User's Reaction</th>
-                                <th class="text-left">Feedback</th>
-                                <th class="text-left">Chapter</th>
-                                <th class="text-left">Created On</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr v-for="item in chatFeedback" :key="item.id">
-                                <td>{{ item.smilySign }}</td>
-                                <td>{{ item.feedbackMsg }}</td>
-                                <td>{{ item.chapterType }}</td>
-                                <td>{{ item.createdOn }}</td>
-                              </tr>
-                            </tbody>
-                          </template>
-                        </v-simple-table>
-                      </template>
-                      <template v-else><h3 class="notFound">Sorry! No Chat Feedback Found</h3></template>
-                  </v-col>
-                  
-                </v-row>
-              </v-container>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-
-        <v-dialog v-model="dialog3" max-width="850px">
-          <v-card>
-            <v-container>
-              <v-row>   
-                <template v-if="filteredMsgList.length>0">        
-                  <v-col cols="12" sm="12" md="12" v-for="(data, index) in filteredMsgList" :key="index" >
-                    <v-card
-                      v-bind:color="data.from.name=='newTeddiBotDev'?'#385F73':'#7D6608'"
-                      dark
-                    >
-                      <v-card-title >
-                        <span v-bind:class="data.from.name=='newTeddiBotDev'?'headline':'title font-weight-light'">{{data.from.name=='newTeddiBotDev'?'Teddi':'You'}}</span>
-                      </v-card-title>
-                      <v-card-text font-weight-bold v-html="data.text">
-                        <!-- {{data.text}} -->
-                      </v-card-text>
-                    </v-card>
-                  </v-col>
-                </template> 
-                <template v-else> 
-                  <v-col cols="12" sm="12" md="12">
-                    <v-card-title class="notFound">Sorry! No Messages found.</v-card-title>
-                  </v-col>
-                </template> 
-              </v-row>             
-            </v-container>
+          <v-spacer></v-spacer>
+          <v-dialog v-model="dialog" max-width="650px">
             
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-            </v-card-actions>
-          </v-card>
-         
-        </v-dialog>
-      </v-toolbar>
-    </template>
+            <v-card>
+              <v-card-title>
+                <span class="headline">View User Details</span>
+              </v-card-title>
 
-     <template v-slot:[`item.chatActions`]="{ item }">
-      <div >
-        <v-menu offset-y>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              color="primary"
-              dark
-              v-bind="attrs"
-              v-on="on"
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    <v-col cols="12" sm="6" md="6">
+                      <v-text-field v-if="singleUserItem.fullName.trim()!=''" v-model="singleUserItem.fullName" label="Full Name" readonly></v-text-field>
+                    <v-text-field v-else value="NA"  label="Full Name" readonly></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="6">
+                      <v-text-field v-if="singleUserItem.email!=''" v-model="singleUserItem.email" label="Email Id" readonly></v-text-field>
+                      <v-text-field v-else value="NA"  label="Email Id" readonly></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="6">
+                      <v-text-field v-if="singleUserItem.registerCompleted" value="Yes" label="Registered?" readonly></v-text-field>
+                      <v-text-field v-else value="No"  label="Registered?" readonly></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="6">
+                      <v-text-field v-if="singleUserItem.registrationDate!=''" v-model="singleUserItem.registrationDate" label="Registered Date" readonly></v-text-field>
+                    </v-col>
+                    <v-col v-if="singleUserItem.child_data.length>0" cols="12" sm="12" md="12">
+                      <v-simple-table height="100px">
+                        <template v-slot:default>
+                          <thead>
+                            <tr>
+                              <th class="text-left">Child Birthday</th>
+                              <th class="text-left">Child Gender</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr v-for="item in singleUserItem.child_data" :key="item.id">
+                              <td>{{ item.child_dob }}</td>
+                              <td>{{ item.child_gender }}</td>
+                            </tr>
+                          </tbody>
+                        </template>
+                      </v-simple-table>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="6">
+                      <v-text-field v-if="singleUserItem.parent_age_range!=''" v-model="singleUserItem.parent_age_range" label="Parent Age Range" readonly></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="6">
+                      <v-text-field v-if="singleUserItem.parent_gender!=''" v-model="singleUserItem.parent_gender" label="Parent Gender" readonly></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="6">
+                      <v-text-field v-if="singleUserItem.zip_code!=''" v-model="singleUserItem.zip_code" label="Zip Code" readonly></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="6">
+                      <v-text-field v-if="singleUserItem.occupation!=''" v-model="singleUserItem.occupation" label="Occupation" readonly></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="6">
+                      <v-text-field v-if="singleUserItem.ethnicity.trim()!='/'" v-model="singleUserItem.ethnicity" label="Ethnicity" readonly></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card-text>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
+          <v-dialog v-model="dialog2" max-width="650px">
+            <v-card>
+              <v-card-title>
+                <span class="headline">View User's Feedback</span>
+              </v-card-title>
+
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    <v-col cols="12" sm="6" md="12" >
+                      <v-card-title >App Feedback</v-card-title>
+                        <template v-if="appFeedback.length>0">
+                          <v-simple-table height="200px">
+                            <template v-slot:default>
+                              <thead>
+                                <tr>
+                                  <th class="text-left">Feedback</th>
+                                  <th class="text-left">Created On</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr v-for="item in appFeedback" :key="item.id">
+                                  <td>{{ item.feedbackMsg }}</td>
+                                  <td>{{ item.createdOn }}</td>
+                                </tr>
+                              </tbody>
+                            </template>
+                          </v-simple-table>
+                        </template>
+                        <template v-else><h3 class="notFound">Sorry! No App Feedback Found</h3></template>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="12">
+                      <v-card-title >Chat Feedback</v-card-title>
+                        <template v-if="chatFeedback.length>0">
+                          <v-simple-table height="200px">
+                            <template v-slot:default>
+                              <thead>
+                                <tr>
+                                  <th class="text-left">User's Reaction</th>
+                                  <th class="text-left">Feedback</th>
+                                  <th class="text-left">Chapter</th>
+                                  <th class="text-left">Created On</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr v-for="item in chatFeedback" :key="item.id">
+                                  <td>{{ item.smilySign }}</td>
+                                  <td>{{ item.feedbackMsg }}</td>
+                                  <td>{{ item.chapterType }}</td>
+                                  <td>{{ item.createdOn }}</td>
+                                </tr>
+                              </tbody>
+                            </template>
+                          </v-simple-table>
+                        </template>
+                        <template v-else><h3 class="notFound">Sorry! No Chat Feedback Found</h3></template>
+                    </v-col>
+                    
+                  </v-row>
+                </v-container>
+              </v-card-text>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
+          <v-dialog v-model="dialog3" max-width="850px">
+            <v-card>
+              <v-container>
+                <v-row>   
+                  <template v-if="filteredMsgList.length>0">        
+                    <v-col cols="12" sm="12" md="12" v-for="(data, index) in filteredMsgList" :key="index" >
+                      <v-card
+                        v-bind:color="data.from.name=='newTeddiBotDev'?'#385F73':'#7D6608'"
+                        dark
+                      >
+                        <v-card-title >
+                          <span v-bind:class="data.from.name=='newTeddiBotDev'?'headline':'title font-weight-light'">{{data.from.name=='newTeddiBotDev'?'Teddi':'You'}}</span>
+                        </v-card-title>
+                        <v-card-text font-weight-bold v-html="data.text">
+                          <!-- {{data.text}} -->
+                        </v-card-text>
+                      </v-card>
+                    </v-col>
+                  </template> 
+                  <template v-else> 
+                    <v-col cols="12" sm="12" md="12">
+                      <v-card-title class="notFound">Sorry! No Messages found.</v-card-title>
+                    </v-col>
+                  </template> 
+                </v-row>             
+              </v-container>
               
-            >
-              Chapters
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item
-              v-for="(data, index) in chapterList"
-              :key="index"
-              @click="showUserChat(item.conversationId, data.keyName)"
-            >
-              <v-list-item-title>{{ data.originalName }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </div>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
+              </v-card-actions>
+            </v-card>
+          
+          </v-dialog>
+        </v-toolbar>
+      </template>
 
-      <!-- <v-icon
-        small
-        class="mr-2"
-        @click="showUserChat(item)"
-      >
-        mdi-message-text
-        
-      </v-icon> -->
-    </template>
+      <template v-slot:[`item.chatActions`]="{ item }">
+        <div >
+          <v-menu offset-y>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                color="primary"
+                dark
+                v-bind="attrs"
+                v-on="on"
+                
+              >
+                Chapters
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="(data, index) in chapterList"
+                :key="index"
+                @click="showUserChat(item.conversationId, data.keyName)"
+              >
+                <v-list-item-title>{{ data.originalName }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
 
-    <template v-slot:[`item.actions`]="{ item }">
-      <v-icon
-        small
-        class="mr-2"
-        @click="viewItem(item)"
-      >
-        mdi-eye
-      </v-icon>
-      <v-icon
-        small
-        class="mr-2"
-        @click="showUserFeedback(item)"
-      >
-        mdi-view-dashboard
-      </v-icon>
-   
-    </template>
-    <template v-slot:no-data>
-      <!-- <v-btn color="primary" @click="initialize">Reset</v-btn> -->
-    </template>
-  </v-data-table>
+        <!-- <v-icon
+          small
+          class="mr-2"
+          @click="showUserChat(item)"
+        >
+          mdi-message-text
+          
+        </v-icon> -->
+      </template>
+
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon
+          small
+          class="mr-2"
+          @click="viewItem(item)"
+        >
+          mdi-eye
+        </v-icon>
+        <v-icon
+          small
+          class="mr-2"
+          @click="showUserFeedback(item)"
+        >
+          mdi-view-dashboard
+        </v-icon>
+    
+      </template>
+      <template v-slot:no-data>
+        <!-- <v-btn color="primary" @click="initialize">Reset</v-btn> -->
+      </template>
+    </v-data-table>
   </v-col>
 </template>
 
@@ -284,11 +311,17 @@ import moment from 'moment';
       chatFeedback: [],
       chapterList: [],
       chatHistory: [],
-      filteredMsgList: []
+      filteredMsgList: [],
+      searchFormHasErrors: false,
+      searchPostcode: ''
     }),
 
     computed: {
-      
+      searchform(){
+        return {
+          refSearchPostcode: this.searchPostcode,
+        }
+      }
     },
 
     watch: {
@@ -308,7 +341,7 @@ import moment from 'moment';
     },
 
     methods: {
-      ...mapActions(["GetAllUserList", "GivenFeedbackUserList", "SingleUserFeedback", "GetUserChatHistory"]),
+      ...mapActions(["GetAllUserList", "GivenFeedbackUserList", "SingleUserFeedback", "GetUserChatHistory", "GetUserListByPostcode"]),
       initialize () {
          this.chapterList = [
           {
@@ -482,14 +515,27 @@ import moment from 'moment';
         // })
       },
 
-      // save () {
-      //   if (this.editedIndex > -1) {
-      //     Object.assign(this.desserts[this.editedIndex], this.editedItem)
-      //   } else {
-      //     this.desserts.push(this.editedItem)
-      //   }
-      //   this.close()
-      // },
+      findUserListByPostcode(){
+        this.searchFormHasErrors = false
+        Object.keys(this.searchform).forEach(f => {
+          
+          if (!this.searchform[f]) this.searchFormHasErrors = true
+          this.$refs[f].validate(true)
+        })
+        if(!this.searchFormHasErrors){
+          this.GetUserListByPostcode(this.searchform.refSearchPostcode).then(res=>{
+            this.userList = res.data.userData;         
+            this.userList.map(data => { 
+              data.fullName = data.firstName+' '+data.lastName ;
+              data.isRegistered = data.registerCompleted? 'Yes':'No'
+              return data;
+            });
+          })
+          .catch(err=>{
+            console.log(err)
+          })
+        }
+      },
     },
     beforeMount(){
       // Get Given Feedback UserList
