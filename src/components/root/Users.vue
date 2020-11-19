@@ -25,6 +25,16 @@
             </v-row>
           </template> 
         </v-col>
+        <v-col cols="12" sm="6" md="4">
+          <v-select
+            v-model="selectedFile"
+            :items="fileList"
+            label="Select Postcodes File"
+            dense
+            outlined
+            @change="fileWiseUserList"
+          ></v-select>
+        </v-col>
       </v-row>
     </template>
     <v-data-table
@@ -313,7 +323,9 @@ import moment from 'moment';
       chatHistory: [],
       filteredMsgList: [],
       searchFormHasErrors: false,
-      searchPostcode: ''
+      searchPostcode: '',
+      fileList: [],
+      selectedFile: ''
     }),
 
     computed: {
@@ -341,7 +353,7 @@ import moment from 'moment';
     },
 
     methods: {
-      ...mapActions(["GetAllUserList", "GivenFeedbackUserList", "SingleUserFeedback", "GetUserChatHistory", "GetUserListByPostcode"]),
+      ...mapActions(["GetAllUserList", "GivenFeedbackUserList", "SingleUserFeedback", "GetUserChatHistory", "GetUserListByPostcode", "GetAllPostcodeFiles", "GetPostcodesByFileName"]),
       initialize () {
          this.chapterList = [
           {
@@ -536,6 +548,26 @@ import moment from 'moment';
           })
         }
       },
+      async fileWiseUserList(){
+        try{
+          let postCodesData = await this.GetPostcodesByFileName(this.selectedFile)
+          let postcodeList = postCodesData.data.postcodeList.map(d => d.postcode)
+          // console.log(postcodeList)
+          let allUserList = await this.GetAllUserList();
+          allUserList = allUserList.data.userData;
+          // console.log(allUserList)
+          this.userList = allUserList.filter(function(element){
+            return postcodeList.indexOf(element.zip_code) !== -1;
+          });
+          this.userList.map(data => { 
+            data.fullName = data.firstName+' '+data.lastName ;
+            data.isRegistered = data.registerCompleted? 'Yes':'No'
+            return data;
+          });
+        }catch(e){
+          console.log(e)
+        }
+      }
     },
     beforeMount(){
       // Get Given Feedback UserList
@@ -551,6 +583,14 @@ import moment from 'moment';
         })
         .catch((err)=>{
           alert(err.response.data.msg)
+        })
+        //get postcode file/location list
+        this.GetAllPostcodeFiles()
+        .then(res=>{
+          this.fileList = res.data.fileList
+        })
+        .catch((err)=>{
+          console.log(err)
         })
     },
   }
