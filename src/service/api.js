@@ -64,3 +64,6 @@ export function getSinglePostcode(itemName){
 export function getUserListByPostcode(itemName){
     return axios.get(BASE_URL+'users/getUsersListByPostcode?zip_code='+itemName)            
 }
+export function getFeedbackExport(payload){
+    return axios.post(BASE_URL+'feedback/getFeedbacklistForExporting',payload)            
+}

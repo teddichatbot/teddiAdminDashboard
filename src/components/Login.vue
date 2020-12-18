@@ -51,6 +51,14 @@
                 </v-form>
               </v-card-text>
               <v-card-actions>
+                <div class="text-center">
+                    <v-progress-circular
+                    v-if="showLoader"
+                    :size="50"
+                    color="primary"
+                    indeterminate
+                    ></v-progress-circular>
+                </div>
                 <v-spacer></v-spacer>
                 <v-btn 
                   color="primary" 
@@ -71,6 +79,7 @@ import { mapState, mapActions } from "vuex";
   export default {
     name: "login-page",
     data: () => ({
+      showLoader: false,
       showPassword: false,
       payload: {
         username: "",
@@ -95,10 +104,10 @@ import { mapState, mapActions } from "vuex";
           alert('Please Enter Password');
           return false;
         }
-        
+        this.showLoader = true;
         this.Login(this.payload)
-        .then(res=>{
-          console.log(res.data.msg);
+        .then(()=>{
+          this.showLoader = false
           this.$router.push({ name: "Dashboard" });
         })
         .catch((err)=>{
