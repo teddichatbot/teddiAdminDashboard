@@ -25,7 +25,8 @@ import {
   addPostcode,
   getSinglePostcode,
   getUserListByPostcode,
-  getFeedbackExport
+  getFeedbackExport,
+  deleteSinglePostcode
 } from '../service/api'
 
 Vue.use(Vuex)
@@ -163,6 +164,11 @@ export default new Vuex.Store({
     },
     GetFeedbackExport: (context, payload)=>{
       return getFeedbackExport(payload).then(async(response)=>{
+        return response;
+      })
+    }, 
+    DeleteSinglePostcode: (context, postcodeId)=>{
+      return deleteSinglePostcode(postcodeId).then(async(response)=>{
         return response;
       })
     }, 

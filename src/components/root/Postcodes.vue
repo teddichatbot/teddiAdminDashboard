@@ -161,16 +161,16 @@
           </v-dialog> -->
         </v-toolbar>
       </template>
-      <!-- <template v-slot:[`item.actions`]="{ item }">
+      <template v-slot:[`item.actions`]="{ item }">
         <v-icon
           small
           class="mr-2"
-          @click="viewItem(item)"
+          @click="deleteItem(item)"
         >
-          mdi-eye
+          mdi-delete
         </v-icon>
         
-      </template> -->
+      </template>
       <template v-slot:no-data>
         <!-- <v-btn color="primary" @click="initialize">Reset</v-btn> -->
       </template>
@@ -195,7 +195,7 @@ import { mapActions } from "vuex";
           value: 'postcode',
         },
         { text: 'Location', value: 'location' },
-        // { text: 'Actions', value: 'actions', sortable: false },
+        { text: 'Actions', value: 'actions', sortable: false },
       ],
       postcodeList: [],
       files: [],
@@ -235,15 +235,23 @@ import { mapActions } from "vuex";
 
     methods: {
       ...mapActions(["GetAllPostcodes", "UploadPostcodes", "GetAllPostcodeFiles", "GetPostcodesByFileName", "DeleteFileWithPostcodes", "AddPostcode",
-      "GetSinglePostcode"]),
+      "GetSinglePostcode", "DeleteSinglePostcode"]),
 
       initialize () {
         
       },
 
-      viewItem (item) {
-        console.log(item)
-        this.dialog = true
+      deleteItem (item) {
+        if (window.confirm("Are you sure want to delete?")) {
+          this.DeleteSinglePostcode(item.id).then(()=>{
+            const index = this.postcodeList.indexOf(item)
+            this.postcodeList.splice(index, 1)
+            // alert(result.data.msg)
+          })
+          .catch(err=>{
+            console.log(err)
+          })
+        }
         
       },
 

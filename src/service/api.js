@@ -67,3 +67,6 @@ export function getUserListByPostcode(itemName){
 export function getFeedbackExport(payload){
     return axios.post(BASE_URL+'feedback/getFeedbacklistForExporting',payload)            
 }
+export function deleteSinglePostcode(postcodeId){
+    return axios.delete(BASE_URL+'postcodes/deletePostcode?postcodeId='+postcodeId)            
+}
