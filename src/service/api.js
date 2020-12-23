@@ -70,3 +70,6 @@ export function getFeedbackExport(payload){
 export function deleteSinglePostcode(postcodeId){
     return axios.delete(BASE_URL+'postcodes/deletePostcode?postcodeId='+postcodeId)            
 }
+export function updateUserName(payload){
+    return axios.post(BASE_URL+'users/setName',payload)            
+}

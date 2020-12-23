@@ -40,7 +40,6 @@
     <v-data-table
       :headers="headers"
       :items="userList"
-      class="elevation-1"
     >
       <template v-slot:top>
         <v-toolbar flat color="white">
@@ -58,7 +57,7 @@
                 <v-container>
                   <v-row>
                     <v-col cols="12" sm="6" md="6">
-                      <v-text-field v-if="singleUserItem.fullName.trim()!=''" v-model="singleUserItem.fullName" label="Full Name" readonly></v-text-field>
+                      <v-text-field v-if="singleUserItem.firstName.trim()!=''" v-model="singleUserItem.firstName" label="Full Name" readonly></v-text-field>
                     <v-text-field v-else value="NA"  label="Full Name" readonly></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="6" md="6">
@@ -221,6 +220,24 @@
           </v-dialog>
         </v-toolbar>
       </template>
+      
+      <template v-slot:[`item.firstName`]="props">
+        <v-edit-dialog
+          :return-value.sync="props.item.firstName"
+          @save="saveUserName(props.item.firstName, props.item.lastName, props.item.conversationId)"
+          @close="close"
+        >
+          {{ props.item.firstName }}
+          <template v-slot:input>
+            <v-text-field
+              v-model="props.item.firstName"
+              label="Edit User Name"
+              single-line
+            ></v-text-field>
+          </template>
+        
+        </v-edit-dialog>
+      </template>
 
       <template v-slot:[`item.chatActions`]="{ item }">
         <div >
@@ -248,14 +265,6 @@
           </v-menu>
         </div>
 
-        <!-- <v-icon
-          small
-          class="mr-2"
-          @click="showUserChat(item)"
-        >
-          mdi-message-text
-          
-        </v-icon> -->
       </template>
 
       <template v-slot:[`item.actions`]="{ item }">
@@ -275,9 +284,7 @@
         </v-icon>
     
       </template>
-      <template v-slot:no-data>
-        <!-- <v-btn color="primary" @click="initialize">Reset</v-btn> -->
-      </template>
+      
     </v-data-table>
   </v-col>
 </template>
@@ -295,7 +302,7 @@ import moment from 'moment';
           text: 'Name',
           align: 'start',
           sortable: false,
-          value: 'fullName',
+          value: 'firstName',
         },
         { text: 'Email', value: 'email' },
         { text: 'Register?', value: 'isRegistered' },
@@ -303,10 +310,10 @@ import moment from 'moment';
         { text: 'Actions', value: 'actions', sortable: false }
       ],
       desserts: [],
-      // editedIndex: -1,
       userList: [],
       singleUserItem: {
-        fullName: '',
+        // fullName: '',
+        firstName: '',
         email: '',
         registerCompleted: null,
         registrationDate: '',
@@ -353,7 +360,7 @@ import moment from 'moment';
     },
 
     methods: {
-      ...mapActions(["GetAllUserList", "GivenFeedbackUserList", "SingleUserFeedback", "GetUserChatHistory", "GetUserListByPostcode", "GetAllPostcodeFiles", "GetPostcodesByFileName"]),
+      ...mapActions(["GetAllUserList", "GivenFeedbackUserList", "SingleUserFeedback", "GetUserChatHistory", "GetUserListByPostcode", "GetAllPostcodeFiles", "GetPostcodesByFileName", "UpdateUserName"]),
       initialize () {
          this.chapterList = [
           {
@@ -413,7 +420,8 @@ import moment from 'moment';
       },
 
       viewItem (item) {       
-        this.singleUserItem.fullName = item.firstName+' '+item.lastName;
+        // this.singleUserItem.fullName = item.firstName+' '+item.lastName;
+        this.singleUserItem.firstName = item.firstName;
         this.singleUserItem.email = item.email;
         this.singleUserItem.registerCompleted = item.registerCompleted;
         this.singleUserItem.child_data = item.child_data;
@@ -517,14 +525,14 @@ import moment from 'moment';
       //   confirm('Are you sure you want to delete this item?') && this.desserts.splice(index, 1)
       // },
 
+      save () {
+        console.log('save')
+      },
+
       close () {
         this.dialog = false;
         this.dialog2 = false;
         this.dialog3 = false;
-        // this.$nextTick(() => {
-        //   this.editedItem = Object.assign({}, this.defaultItem)
-        //   this.editedIndex = -1
-        // })
       },
 
       findUserListByPostcode(){
@@ -538,7 +546,7 @@ import moment from 'moment';
           this.GetUserListByPostcode(this.searchform.refSearchPostcode).then(res=>{
             this.userList = res.data.userData;         
             this.userList.map(data => { 
-              data.fullName = data.firstName+' '+data.lastName ;
+              // data.fullName = data.firstName+' '+data.lastName ;
               data.isRegistered = data.registerCompleted? 'Yes':'No'
               return data;
             });
@@ -560,13 +568,26 @@ import moment from 'moment';
             return postcodeList.indexOf(element.zip_code) !== -1;
           });
           this.userList.map(data => { 
-            data.fullName = data.firstName+' '+data.lastName ;
+            // data.fullName = data.firstName+' '+data.lastName ;
             data.isRegistered = data.registerCompleted? 'Yes':'No'
             return data;
           });
         }catch(e){
           console.log(e)
         }
+      },
+      async saveUserName(firstName, lastName, conversationId){
+        let payload = {
+          conversationId: conversationId,
+          fname: firstName,
+          lname: lastName
+        }
+        this.UpdateUserName(payload).then(()=>{
+          alert('Updated user name')
+        })
+        .catch(err=>{
+          console.log(err)
+        })
       }
     },
     beforeMount(){
@@ -576,7 +597,7 @@ import moment from 'moment';
           this.userList = res.data.userData;
           
           this.userList.map(data => { 
-            data.fullName = data.firstName+' '+data.lastName ;
+            // data.fullName = data.firstName+' '+data.lastName ;
             data.isRegistered = data.registerCompleted? 'Yes':'No'
             return data;
           });
