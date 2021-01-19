@@ -73,3 +73,6 @@ export function deleteSinglePostcode(postcodeId){
 export function updateUserName(payload){
     return axios.post(BASE_URL+'users/setName',payload)            
 }
+export function deleteSingleUser(userId){
+    return axios.delete(BASE_URL+'users/deleteSingleuser?userId='+userId)            
+}

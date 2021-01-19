@@ -27,7 +27,8 @@ import {
   getUserListByPostcode,
   getFeedbackExport,
   deleteSinglePostcode,
-  updateUserName
+  updateUserName,
+  deleteSingleUser
 } from '../service/api'
 
 Vue.use(Vuex)
@@ -175,6 +176,11 @@ export default new Vuex.Store({
     }, 
     UpdateUserName: (context, payload)=>{
       return updateUserName(payload).then(async(response)=>{
+        return response;
+      })
+    },
+    DeleteSingleUser: (context, userId)=>{
+      return deleteSingleUser(userId).then(async(response)=>{
         return response;
       })
     }, 

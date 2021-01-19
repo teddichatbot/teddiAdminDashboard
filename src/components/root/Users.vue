@@ -282,7 +282,13 @@
         >
           mdi-view-dashboard
         </v-icon>
-    
+        <v-icon
+          small
+          class="mr-2"
+          @click="deleteItem(item)"
+        >
+          mdi-delete
+        </v-icon>
       </template>
       
     </v-data-table>
@@ -360,7 +366,7 @@ import moment from 'moment';
     },
 
     methods: {
-      ...mapActions(["GetAllUserList", "GivenFeedbackUserList", "SingleUserFeedback", "GetUserChatHistory", "GetUserListByPostcode", "GetAllPostcodeFiles", "GetPostcodesByFileName", "UpdateUserName"]),
+      ...mapActions(["GetAllUserList", "GivenFeedbackUserList", "SingleUserFeedback", "GetUserChatHistory", "GetUserListByPostcode", "GetAllPostcodeFiles", "GetPostcodesByFileName", "UpdateUserName", "DeleteSingleUser"]),
       initialize () {
          this.chapterList = [
           {
@@ -432,6 +438,19 @@ import moment from 'moment';
         this.singleUserItem.ethnicity = item.ethnicityMaster+'/'+item.ethnicityChild;
         this.singleUserItem.registrationDate = item.registrationDate ? item.registrationDate:'' ;
         this.dialog = true
+      },
+      deleteItem (item) {
+        if (window.confirm("Are you sure want to delete?")) {
+          // console.log(item)
+          this.DeleteSingleUser(item.id).then(()=>{
+            const index = this.userList.indexOf(item)
+            this.userList.splice(index, 1)
+            // alert(result.data.msg)
+          })
+          .catch(err=>{
+            console.log(err)
+          })
+        }
       },
 
       showUserFeedback (item) {
