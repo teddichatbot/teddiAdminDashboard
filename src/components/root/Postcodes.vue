@@ -251,8 +251,7 @@ import { mapActions } from "vuex";
           .catch(err=>{
             console.log(err)
           })
-        }
-        
+        }       
       },
 
       close () {

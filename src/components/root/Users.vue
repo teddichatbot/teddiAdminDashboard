@@ -37,13 +37,21 @@
         </v-col>
       </v-row>
     </template>
+    <div class="text-center">
+        <v-progress-circular
+        v-if="showLoader"
+        :size="50"
+        color="primary"
+        indeterminate
+        ></v-progress-circular>
+    </div>
     <v-data-table
       :headers="headers"
       :items="userList"
     >
       <template v-slot:top>
         <v-toolbar flat color="white">
-          <v-toolbar-title>User List</v-toolbar-title>
+          <v-toolbar-title>User List : {{userList.length}}</v-toolbar-title>
           
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="650px">
@@ -300,6 +308,7 @@ import { mapActions } from "vuex";
 import moment from 'moment';
   export default {
     data: () => ({
+      showLoader: false,
       dialog: false,
       dialog2: false,
       dialog3: false,
@@ -577,6 +586,7 @@ import moment from 'moment';
       },
       async fileWiseUserList(){
         try{
+          this.showLoader = true;
           let postCodesData = await this.GetPostcodesByFileName(this.selectedFile)
           let postcodeList = postCodesData.data.postcodeList.map(d => d.postcode)
           // console.log(postcodeList)
@@ -591,7 +601,9 @@ import moment from 'moment';
             data.isRegistered = data.registerCompleted? 'Yes':'No'
             return data;
           });
+          this.showLoader = false;
         }catch(e){
+          this.showLoader = false;
           console.log(e)
         }
       },
