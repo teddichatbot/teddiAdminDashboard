@@ -78,6 +78,16 @@
             <v-btn color="primary">Download</v-btn> 
           </download-excel>
         </v-col>
+        <v-col cols="12" sm="6" md="4">
+          <v-select
+            v-model="selectedFile"
+            :items="fileList"
+            label="Select Postcodes File"
+            dense
+            outlined
+            @change="fileWiseUserList"
+          ></v-select>
+        </v-col>
       </v-row>
     </template>
     <template>
@@ -236,7 +246,10 @@ import moment from 'moment'
       menu1: false,
       menu2: false,
       formHasErrors: false,
-      hasExportData: false
+      hasExportData: false,
+      fileList: [],
+      selectedFile: '',
+      locationWiseUserList: []
     }),
 
     computed: {
@@ -258,7 +271,7 @@ import moment from 'moment'
     },
 
     methods: {
-      ...mapActions(["GivenFeedbackUserList", "SingleUserFeedback", "GetFeedbackExport"]),
+      ...mapActions(["GivenFeedbackUserList", "SingleUserFeedback", "GetFeedbackExport", "GetAllPostcodeFiles", "GetPostcodesByFileName", "GetAllUserList"]),
 
       initialize () {
         this.chapterList = [
@@ -318,6 +331,7 @@ import moment from 'moment'
       },
 
       viewItem (item) {
+        console.log(item)
         this.SingleUserFeedback(item.conversationId).then(getFeedback=>{
           this.appFeedback = getFeedback.data.appFeedBack.map(data =>{
             data.createdOn = moment(String(data.createdOn)).format('DD/MM/YYYY hh:mm A')
@@ -391,8 +405,41 @@ import moment from 'moment'
             console.log(err)
           })
         }
-      }
-
+      },
+      async fileWiseUserList(){
+        try{
+          this.showLoader = true;
+          let postCodesData = await this.GetPostcodesByFileName(this.selectedFile)
+          let postcodeList = postCodesData.data.postcodeList.map(d => d.postcode)
+          
+          let allUserList = await this.GetAllUserList();
+          allUserList = allUserList.data.userData;
+          
+          this.locationWiseUserList = allUserList.filter(function(element){
+            return postcodeList.indexOf(element.zip_code) !== -1;
+          });
+          
+          let givenFeedbackUserList = await this.GivenFeedbackUserList();
+          givenFeedbackUserList = givenFeedbackUserList.data.userData
+          
+          this.userList = this.locationWiseUserList.filter(function(o1){
+            // Get common object
+            return givenFeedbackUserList.some(function(o2){
+                return o1.conversationId === o2.conversationId;          // assumes unique id
+            });
+          });
+          this.userList.map(data => {
+            data.fullName = data.firstName+' '+data.lastName ;
+            data.isRegistered = data.registrationDate? 'Yes':'No'
+            return data;
+          });
+          
+          this.showLoader = false;
+        }catch(e){
+          this.showLoader = false;
+          console.log(e)
+        }
+      },
     },
     beforeMount(){
       //Get Given Feedback UserList
@@ -401,7 +448,7 @@ import moment from 'moment'
           // console.log(res.data.userData)
           this.userList = res.data.userData;
           
-          this.userList.map(data => { 
+          this.userList.map(data => {
             data.fullName = data.firstName+' '+data.lastName ;
             data.isRegistered = data.registrationDate? 'Yes':'No'
             return data;
@@ -409,6 +456,15 @@ import moment from 'moment'
         })
         .catch((err)=>{
           alert(err.response.data.msg)
+        })
+
+        //get postcode file/location list
+        this.GetAllPostcodeFiles()
+        .then(res=>{
+          this.fileList = res.data.fileList
+        })
+        .catch((err)=>{
+          console.log(err)
         })
     },
   }
