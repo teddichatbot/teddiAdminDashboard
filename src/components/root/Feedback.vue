@@ -95,7 +95,7 @@
             :data="json_data_by_location"
             :fields="json_fields"
             worksheet="My Worksheet"
-            name="feedbacksheet.xls"
+            name="feedbacksheetByLocation.xls"
           >
             <v-btn color="primary">Download</v-btn> 
           </download-excel>
