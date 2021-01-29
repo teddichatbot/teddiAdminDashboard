@@ -88,6 +88,18 @@
             @change="fileWiseUserList"
           ></v-select>
         </v-col>
+        <v-col cols="12" md="2">
+          <download-excel
+            v-if="hasExportDataByLocation"
+            class="btn btn-default"
+            :data="json_data_by_location"
+            :fields="json_fields"
+            worksheet="My Worksheet"
+            name="feedbacksheet.xls"
+          >
+            <v-btn color="primary">Download</v-btn> 
+          </download-excel>
+        </v-col>
       </v-row>
     </template>
     <template>
@@ -249,7 +261,9 @@ import moment from 'moment'
       hasExportData: false,
       fileList: [],
       selectedFile: '',
-      locationWiseUserList: []
+      locationWiseUserList: [],
+      hasExportDataByLocation: false,
+      json_data_by_location: []
     }),
 
     computed: {
@@ -271,7 +285,7 @@ import moment from 'moment'
     },
 
     methods: {
-      ...mapActions(["GivenFeedbackUserList", "SingleUserFeedback", "GetFeedbackExport", "GetAllPostcodeFiles", "GetPostcodesByFileName", "GetAllUserList"]),
+      ...mapActions(["GivenFeedbackUserList", "SingleUserFeedback", "GetFeedbackExport", "GetAllPostcodeFiles", "GetPostcodesByFileName", "GetAllUserList", "FileWiseFeedbackList"]),
 
       initialize () {
         this.chapterList = [
@@ -331,7 +345,7 @@ import moment from 'moment'
       },
 
       viewItem (item) {
-        console.log(item)
+        // console.log(item)
         this.SingleUserFeedback(item.conversationId).then(getFeedback=>{
           this.appFeedback = getFeedback.data.appFeedBack.map(data =>{
             data.createdOn = moment(String(data.createdOn)).format('DD/MM/YYYY hh:mm A')
@@ -409,19 +423,21 @@ import moment from 'moment'
       async fileWiseUserList(){
         try{
           this.showLoader = true;
+          //get all postcodes by location/file name
           let postCodesData = await this.GetPostcodesByFileName(this.selectedFile)
           let postcodeList = postCodesData.data.postcodeList.map(d => d.postcode)
-          
+          //get all users
           let allUserList = await this.GetAllUserList();
           allUserList = allUserList.data.userData;
-          
+          //filtered users by location -----> 1
           this.locationWiseUserList = allUserList.filter(function(element){
             return postcodeList.indexOf(element.zip_code) !== -1;
           });
-          
+          // get all users who submit feedback -----> 2
           let givenFeedbackUserList = await this.GivenFeedbackUserList();
           givenFeedbackUserList = givenFeedbackUserList.data.userData
           
+          //get common users betwwen 1 & 2
           this.userList = this.locationWiseUserList.filter(function(o1){
             // Get common object
             return givenFeedbackUserList.some(function(o2){
@@ -433,8 +449,42 @@ import moment from 'moment'
             data.isRegistered = data.registrationDate? 'Yes':'No'
             return data;
           });
+
+          let convIdList = this.userList.map(data => {
+            return data.conversationId;
+          });
+          // console.log(convIdList)
+          let payload = {
+            convIds: convIdList
+          }
+          this.FileWiseFeedbackList(payload).then(getData=>{
+            if(getData.data.feedbackData.length>0){
+              
+              this.json_data_by_location = getData.data.feedbackData.map(data=>{
+                data.smilySign = (data.isSmiled == '')? data.isSmiled : (data.isSmiled == 'happy')? '😃':'😔';
+                data.createdOn = moment(String(data.createdOn)).format('DD/MM/YYYY hh:mm A')
+                
+                this.chapterList.forEach(element => {
+                  if(element.keyName == data.chapterType){
+                    data.chapterType = element.originalName
+                  }
+                });
+                data.answer1 = data.qa.length>0 ? data.qa[0].answer : '';
+                data.answer2 = data.qa.length>1 ? data.qa[1].answer : '';
+                return data;
+              })
+              this.showLoader = false;
+              this.hasExportDataByLocation = true;
+            }else{
+              this.showLoader = false;
+              this.hasExportDataByLocation = false;
+              alert('No feedback data for downloading')
+            }
+          })
+          .catch(err=>{
+            console.log(err)
+          })
           
-          this.showLoader = false;
         }catch(e){
           this.showLoader = false;
           console.log(e)

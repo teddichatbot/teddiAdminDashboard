@@ -76,3 +76,6 @@ export function updateUserName(payload){
 export function deleteSingleUser(userId){
     return axios.delete(BASE_URL+'users/deleteSingleuser?userId='+userId)            
 }
+export function fileWiseFeedbackList(payload){
+    return axios.post(BASE_URL+'feedback/feedBackListByConvIds',payload)            
+}

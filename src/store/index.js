@@ -28,7 +28,8 @@ import {
   getFeedbackExport,
   deleteSinglePostcode,
   updateUserName,
-  deleteSingleUser
+  deleteSingleUser,
+  fileWiseFeedbackList
 } from '../service/api'
 
 Vue.use(Vuex)
@@ -184,6 +185,11 @@ export default new Vuex.Store({
         return response;
       })
     }, 
+    FileWiseFeedbackList: (context, userId)=>{
+      return fileWiseFeedbackList(userId).then(async(response)=>{
+        return response;
+      })
+    },
   },
   modules: {
   }
