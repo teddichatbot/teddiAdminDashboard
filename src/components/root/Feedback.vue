@@ -403,8 +403,13 @@ import moment from 'moment'
                     data.chapterType = element.originalName
                   }
                 });
-                data.answer1 = data.qa.length>0 ? data.qa[0].answer : '';
-                data.answer2 = data.qa.length>1 ? data.qa[1].answer : '';
+                if(data.qa){
+                  data.answer1 = data.qa.length>0 ? data.qa[0].answer : '';
+                  data.answer2 = data.qa.length>1 ? data.qa[1].answer : '';
+                }else{
+                  data.answer1 = '';
+                  data.answer2 = '';
+                }     
                 return data;
               })
               this.showLoader = false;
@@ -459,7 +464,7 @@ import moment from 'moment'
           }
           this.FileWiseFeedbackList(payload).then(getData=>{
             if(getData.data.feedbackData.length>0){
-              
+              // console.log(getData.data.feedbackData)
               this.json_data_by_location = getData.data.feedbackData.map(data=>{
                 data.smilySign = (data.isSmiled == '')? data.isSmiled : (data.isSmiled == 'happy')? '😃':'😔';
                 data.createdOn = moment(String(data.createdOn)).format('DD/MM/YYYY hh:mm A')
@@ -469,8 +474,13 @@ import moment from 'moment'
                     data.chapterType = element.originalName
                   }
                 });
-                data.answer1 = data.qa.length>0 ? data.qa[0].answer : '';
-                data.answer2 = data.qa.length>1 ? data.qa[1].answer : '';
+                if(data.qa){
+                  data.answer1 = data.qa.length>0 ? data.qa[0].answer : '';
+                  data.answer2 = data.qa.length>1 ? data.qa[1].answer : '';
+                }else{
+                  data.answer1 = '';
+                  data.answer2 = '';
+                }               
                 return data;
               })
               this.showLoader = false;
