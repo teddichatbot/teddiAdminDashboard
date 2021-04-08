@@ -52,7 +52,17 @@
       <template v-slot:top>
         <v-toolbar flat color="white">
           <v-toolbar-title>User List : {{userList.length}}</v-toolbar-title>
-          
+          <v-spacer></v-spacer>
+          <download-excel
+            v-if="hasExportData"
+            class="btn btn-default"
+            :data="json_data"
+            :fields="json_fields"
+            worksheet="My Worksheet"
+            name="users_data.xls"
+          >
+            <v-btn color="primary">Download</v-btn> 
+          </download-excel>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="650px">
             
@@ -80,7 +90,7 @@
                       <v-text-field v-if="singleUserItem.registrationDate!=''" v-model="singleUserItem.registrationDate" label="Registered Date" readonly></v-text-field>
                     </v-col>
                     <v-col v-if="singleUserItem.child_data.length>0" cols="12" sm="12" md="12">
-                      <v-simple-table height="100px">
+                      <v-simple-table height="150px">
                         <template v-slot:default>
                           <thead>
                             <tr>
@@ -347,7 +357,53 @@ import moment from 'moment';
       searchFormHasErrors: false,
       searchPostcode: '',
       fileList: [],
-      selectedFile: ''
+      selectedFile: '',
+      hasExportData: false,
+      json_data: [],
+      json_fields: {
+        Name: "firstName",
+        Email: "email",
+        "Registration Date": "registrationDate",
+        "Child BirthDay": {
+            field: 'child_data',
+            callback: (value) => {
+              var birthDates = ''
+              for (var x of value) {
+                birthDates += x.child_dob + ' \n'
+              }
+              return birthDates;
+            }
+        },
+        "Child Gender": {
+            field: 'child_data',
+            callback: (value) => {
+              var genders = ''
+              for (var x of value) {
+                genders += x.child_gender + ' \n'
+              }
+              return genders;
+            }
+        },
+        "Parent Age Range": "parent_age_range",
+        "Parent Gender": "parent_gender",
+        Zipcode: "zip_code",
+        Occupation: "occupation",
+        Ethnicity: {
+          callback: (value) => {
+              return value.ethnicityMaster+'/'+value.ethnicityChild; 
+          }
+        },
+      },
+      dataForExcel: [
+        { colA: "Hello", colB: "World" },
+        {
+          colA: "Multi-line",
+          /* Multi-line value: */
+          colB:
+            "This is a long paragraph\nwith multiple lines\nthat should show in a single cell.",
+        },
+        { colA: "Another", colB: "Regular cell" },
+      ],
     }),
 
     computed: {
@@ -592,7 +648,7 @@ import moment from 'moment';
           // console.log(postcodeList)
           let allUserList = await this.GetAllUserList();
           allUserList = allUserList.data.userData;
-          // console.log(allUserList)
+          // filtering users of postcodes matching
           this.userList = allUserList.filter(function(element){
             return postcodeList.indexOf(element.zip_code) !== -1;
           });
@@ -601,6 +657,16 @@ import moment from 'moment';
             data.isRegistered = data.registerCompleted? 'Yes':'No'
             return data;
           });
+
+          //export xlsx
+          this.json_data = [...this.userList];
+          if(this.json_data.length>0){
+            this.hasExportData = true;
+          }else{
+            this.hasExportData = false;
+            alert('No data found')
+          }
+          
           this.showLoader = false;
         }catch(e){
           this.showLoader = false;
@@ -634,7 +700,7 @@ import moment from 'moment';
           });
         })
         .catch((err)=>{
-          alert(err.response.data.msg)
+          console.log(err.response.data.msg)
         })
         //get postcode file/location list
         this.GetAllPostcodeFiles()

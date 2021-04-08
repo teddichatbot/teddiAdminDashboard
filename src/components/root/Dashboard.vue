@@ -140,7 +140,7 @@ export default {
             });
         })
         .catch((err)=>{
-          alert(err.response.data.msg)
+          console.log(err.response.data.msg)
         })
     },
 }
