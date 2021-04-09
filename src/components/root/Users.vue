@@ -361,9 +361,9 @@ import moment from 'moment';
       hasExportData: false,
       json_data: [],
       json_fields: {
-        Name: "firstName",
+        // Name: "firstName",
         Email: "email",
-        "Registration Date": "registrationDate",
+        // "Registration Date": "registrationDate",
         "Child BirthDay": {
             field: 'child_data',
             callback: (value) => {
@@ -660,7 +660,14 @@ import moment from 'moment';
 
           //export xlsx
           this.json_data = [...this.userList];
+          
           if(this.json_data.length>0){
+            //take first part of zipcode
+            this.json_data.map(data => {
+              let zip_codeArr = data.zip_code.split(' ');
+              data.zip_code = zip_codeArr[0]
+              return data;
+            });
             this.hasExportData = true;
           }else{
             this.hasExportData = false;
